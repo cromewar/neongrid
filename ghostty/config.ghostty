@@ -15,8 +15,11 @@ font-feature = calt
 # 1.3.1 only speaks the old one, so `background-blur` silently no-ops. We get
 # blur from KWin instead (Better Blur DX force-blurs the com.mitchellh.ghostty
 # window class), which is strictly better — it fixes every other app too.
-background-opacity = 0.92
-unfocused-split-opacity = 0.7
+#
+# 0.85 is about as far as this goes before diff-add green starts fighting the
+# wallpaper behind it. Better Blur is what keeps it readable at this level.
+background-opacity = 0.85
+unfocused-split-opacity = 0.65
 
 # If text looks thin or washed over the transparent background, switch this to
 # `native`. linear-corrected is the default and is usually right.
@@ -36,6 +39,12 @@ window-theme = ghostty
 window-padding-x = 14
 window-padding-y = 10
 window-padding-balance = true
+
+# Default size is in CELLS (columns x rows), not pixels. At font-size 12 this is
+# roughly 1650x1080 px on the 2560x1440 panel — big enough for a Claude Code
+# session with a wide diff, without going full-screen.
+window-width = 170
+window-height = 48
 
 # --- shaders ------------------------------------------------------------
 # One cheap shader only: a neon cursor streak. A CRT+bloom chain is a
