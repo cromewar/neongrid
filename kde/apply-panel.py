@@ -114,6 +114,25 @@ def patch(g):
     return g
 
 
+# --- system tray icon replacements ------------------------------------------
+# Apps like Claude, Antigravity and TickTick push their tray icon as an EMBEDDED
+# PIXMAP over StatusNotifierItem — it never goes through the icon theme, so no
+# amount of theming touches it (that's why TickTick still showed its old logo).
+#
+# Panel Colorizer can override them by rule: `match` is a regex tested against
+# the tray item's name/title, `icon` is an icon-theme name. We point each at the
+# NeonGrid icon we built, so the tray finally matches the dock.
+#
+# The names are the SNI Ids as registered on the bus, e.g.:
+#   Claude_status_icon_1 | Antigravity_status_icon_1 | chrome_status_icon_1 (TickTick, Electron)
+TRAY_RULES = [
+    {"description": "Claude",      "match": "^Claude_status_icon",      "icon": "claude-desktop",        "enabled": True},
+    {"description": "Antigravity", "match": "^Antigravity_status_icon", "icon": "antigravity",           "enabled": True},
+    {"description": "TickTick",    "match": "^chrome_status_icon",      "icon": "ticktick",              "enabled": True},
+    {"description": "Codex",       "match": "^(Codex|openai)",          "icon": "openai-codex-desktop",  "enabled": True},
+    {"description": "Arch-Update", "match": "^Arch-Update",             "icon": "system-software-update","enabled": True},
+]
+
 applets = find_applets()
 if not applets:
     sys.exit("no Panel Colorizer applet found — add the widget to a panel first")
@@ -129,4 +148,10 @@ for c, a in applets:
     kwrite(c, a, "hideWidget", "true")   # the applet itself must not be visible
     # Icon color comes from the NeonGrid icon theme, not from a global override.
     kwrite(c, a, "forceForegroundColor", "false")
-    print(f"  configured Panel Colorizer at containment {c}, applet {a}")
+    # The whole replacement feature is gated behind this toggle (default false) —
+    # the rules are silently ignored without it.
+    kwrite(c, a, "systemTrayIconsReplacementEnabled", "true")
+    kwrite(c, a, "systemTrayIconUserReplacements",
+           json.dumps(TRAY_RULES, separators=(",", ":")))
+    print(f"  configured Panel Colorizer at containment {c}, applet {a} "
+          f"(+{len(TRAY_RULES)} tray icon rules)")
