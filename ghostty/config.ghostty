@@ -1,0 +1,46 @@
+# NEONGRID — Ghostty
+# Reload in-place with ctrl+shift+,
+
+theme = NeonGrid
+
+# --- font ---------------------------------------------------------------
+font-family = JetBrainsMono Nerd Font
+font-size = 12
+font-feature = liga
+font-feature = calt
+
+# --- transparency -------------------------------------------------------
+# Blur is deliberately NOT set here. KDE 6.7 dropped the old
+# org_kde_kwin_blur_manager protocol for ext-background-effect-v1, and Ghostty
+# 1.3.1 only speaks the old one, so `background-blur` silently no-ops. We get
+# blur from KWin instead (Better Blur DX force-blurs the com.mitchellh.ghostty
+# window class), which is strictly better — it fixes every other app too.
+background-opacity = 0.92
+unfocused-split-opacity = 0.7
+
+# If text looks thin or washed over the transparent background, switch this to
+# `native`. linear-corrected is the default and is usually right.
+alpha-blending = linear-corrected
+
+# --- cursor -------------------------------------------------------------
+cursor-style = block
+cursor-style-blink = false
+mouse-hide-while-typing = true
+
+# --- window -------------------------------------------------------------
+# server = KWin draws a real Klassy decoration: matches Plasma, respects window
+# rules, and plays properly with KWin effects. `client` would give a libadwaita
+# headerbar that looks foreign on KDE.
+window-decoration = server
+window-theme = ghostty
+window-padding-x = 14
+window-padding-y = 10
+window-padding-balance = true
+
+# --- shaders ------------------------------------------------------------
+# One cheap shader only: a neon cursor streak. A CRT+bloom chain is a
+# full-surface fragment pass on EVERY redraw, and Claude Code / Codex stream
+# enormous output through this terminal on a shared-memory iGPU.
+# Shader compile errors do NOT surface as config errors — check the log.
+custom-shader = shaders/cursor_blaze.glsl
+custom-shader-animation = true

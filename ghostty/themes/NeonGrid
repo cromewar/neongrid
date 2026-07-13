@@ -1,0 +1,28 @@
+# NeonGrid — generated from cyberdeck/palette.sh. Do not hand-edit.
+background = #0a0e0f
+foreground = #c6d0cb
+cursor-color = #39ff14
+cursor-text = #001a00
+selection-background = #2a1b4d
+selection-foreground = #e8e3ff
+bold-color = #e6f2ee
+
+# normal
+palette = 0=#131a1c
+palette = 1=#ff3c6a
+palette = 2=#3be05c
+palette = 3=#f5d742
+palette = 4=#9d6bff
+palette = 5=#d96bff
+palette = 6=#38e8d0
+palette = 7=#b8c4c0
+
+# bright
+palette = 8=#3a4a46
+palette = 9=#ff6b93
+palette = 10=#39ff14
+palette = 11=#ffe96b
+palette = 12=#bc8cff
+palette = 13=#e89aff
+palette = 14=#6bfff0
+palette = 15=#e6f2ee

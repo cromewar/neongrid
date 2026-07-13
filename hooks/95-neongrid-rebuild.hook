@@ -1,0 +1,24 @@
+# NEONGRID — rebuild the compiled desktop components after a Plasma/KWin bump.
+#
+# These three are compiled against KWin/Plasma internals. If they are not
+# rebuilt after a Plasma update you get, respectively:
+#   kwin-effects-better-blur-dx      -> blur silently stops working
+#   klassy-git                       -> windows lose their decorations
+#   plasma6-applets-panel-colorizer  -> plasmashell can enter a crash loop
+#
+# CachyOS is rolling and tracks Plasma closely, so this WILL happen.
+# This hook only WARNS (it cannot run paru as root); run the rebuild yourself:
+#   ~/cyberdeck/rebuild.sh
+
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = plasma-workspace
+Target = kwin
+Target = libplasma
+Target = qt6-base
+
+[Action]
+Description = NEONGRID: Plasma changed — run ~/cyberdeck/rebuild.sh to rebuild blur/decoration/panel plugins
+When = PostTransaction
+Exec = /usr/bin/bash -c "printf '\n\033[1;93m  NEONGRID: Plasma/KWin was upgraded.\033[0m\n  Rebuild the compiled theme components or blur, window decorations,\n  and the panel may break:\n\n    \033[1;92m~/cyberdeck/rebuild.sh\033[0m\n\n'"

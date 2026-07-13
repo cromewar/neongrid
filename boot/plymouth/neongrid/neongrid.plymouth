@@ -1,0 +1,34 @@
+[Plymouth Theme]
+Name=NeonGrid
+Description=Cyberpunk neon boot splash
+ModuleName=two-step
+
+[two-step]
+Font=Rajdhani 12
+TitleFont=Orbitron 28
+MonospaceFont=JetBrainsMono Nerd Font 12
+ImageDir=/usr/share/plymouth/themes/neongrid
+DialogHorizontalAlignment=.5
+DialogVerticalAlignment=.382
+TitleHorizontalAlignment=.5
+TitleVerticalAlignment=.382
+HorizontalAlignment=.5
+VerticalAlignment=.7
+WatermarkHorizontalAlignment=.5
+WatermarkVerticalAlignment=.96
+Transition=none
+TransitionDuration=0.0
+BackgroundStartColor=0x0a0e0f
+BackgroundEndColor=0x0a0e0f
+ProgressBarBackgroundColor=0x1b2427
+ProgressBarForegroundColor=0x39ff14
+MessageBelowAnimation=true
+
+[boot-up]
+UseEndAnimation=false
+
+[shutdown]
+UseEndAnimation=false
+
+[reboot]
+UseEndAnimation=false
