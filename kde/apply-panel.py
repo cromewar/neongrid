@@ -70,41 +70,47 @@ def patch(g):
     panel["enabled"] = True
     panel["blurBehind"] = True
 
-    set_color(panel["backgroundColor"], hx("BG"), 0.55)
+    set_color(panel["backgroundColor"], hx("BG"), 0.72)
     set_color(panel["foregroundColor"], hx("FG"), 1)
 
     panel["radius"] = {"enabled": True, "corner": dict.fromkeys(
-        ("topLeft", "topRight", "bottomRight", "bottomLeft"), 12)}
+        ("topLeft", "topRight", "bottomRight", "bottomLeft"), 10)}
     panel["margin"] = {"enabled": True,
-                       "side": {"left": 8, "right": 8, "top": 5, "bottom": 5}}
+                       "side": {"left": 6, "right": 6, "top": 4, "bottom": 4}}
 
-    # the neon edge
+    # The edge.
+    # A 2px FULL-OPACITY hero-green border reads as a highlighter rectangle, not
+    # neon — a real neon edge is a THIN, PARTLY-TRANSPARENT line whose glow comes
+    # from the shadow behind it, not from the line's own weight.
     b = panel["border"]
     b["enabled"] = True
     b["customSides"] = False
-    b["width"] = 2
+    b["width"] = 1
     if "color" not in b:
         b["color"] = json.loads(json.dumps(panel["foregroundColor"]))
-    set_color(b["color"], hx("GREEN_HERO"), 1)
+    set_color(b["color"], hx("GREEN"), 0.55)
     b.setdefault("radius", {"enabled": True, "corner": dict.fromkeys(
-        ("topLeft", "topRight", "bottomRight", "bottomLeft"), 12)})
+        ("topLeft", "topRight", "bottomRight", "bottomLeft"), 10)})
 
-    # the glow: a hero-green shadow behind the panel
+    # The glow lives here: a soft, low-alpha green bloom behind the slab.
     sh = panel["shadow"]["background"]
     sh["enabled"] = True
-    set_color(sh["color"], hx("GREEN_HERO"), 1)
-    for k, v in (("size", 16), ("xOffset", 0), ("yOffset", 0)):
+    set_color(sh["color"], hx("GREEN"), 0.35)
+    for k, v in (("size", 24), ("xOffset", 0), ("yOffset", 0)):
         sh[k] = v
 
-    # widgets become violet islands with neon icons
+    # Widgets: no per-widget slabs (that was the boxy mess).
+    # Deliberately DO NOT force a single foreground color on icons — that
+    # flattens every app mark to one flat hue and kills the neon. Coherence
+    # comes from the NeonGrid icon theme (per-app gradients in palette), not
+    # from steamrolling the colors here. Text/labels do follow the palette.
     w = g["widgets"]["normal"]
-    set_color(w["backgroundColor"], hx("SEL_BG"), 0.45)
-    set_color(w["foregroundColor"], hx("GREEN_HERO"), 1)
-    w["radius"] = {"enabled": True, "corner": dict.fromkeys(
-        ("topLeft", "topRight", "bottomRight", "bottomLeft"), 8)}
+    w["backgroundColor"]["enabled"] = False
+    w["foregroundColor"]["enabled"] = False
+    w["radius"] = {"enabled": False, "corner": dict.fromkeys(
+        ("topLeft", "topRight", "bottomRight", "bottomLeft"), 0)}
     if "shadow" in w and "background" in w["shadow"]:
-        ws = w["shadow"]["background"]
-        ws["enabled"] = False  # per-widget glow on top of panel glow = mush
+        w["shadow"]["background"]["enabled"] = False
     return g
 
 
@@ -121,4 +127,6 @@ for c, a in applets:
     kwrite(c, a, "globalSettings", json.dumps(g, separators=(",", ":")))
     kwrite(c, a, "isEnabled", "true")
     kwrite(c, a, "hideWidget", "true")   # the applet itself must not be visible
+    # Icon color comes from the NeonGrid icon theme, not from a global override.
+    kwrite(c, a, "forceForegroundColor", "false")
     print(f"  configured Panel Colorizer at containment {c}, applet {a}")

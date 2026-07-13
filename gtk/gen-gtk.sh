@@ -17,7 +17,7 @@ mkdir -p ~/.config/gtk-3.0 ~/.config/gtk-4.0
 cat > ~/.config/gtk-3.0/settings.ini <<EOF
 [Settings]
 gtk-theme-name=adw-gtk3-dark
-gtk-icon-theme-name=BeautyLine
+gtk-icon-theme-name=NeonGrid
 gtk-cursor-theme-name=Bibata-Neon
 gtk-cursor-theme-size=24
 gtk-font-name=Rajdhani 11
@@ -33,7 +33,7 @@ EOF
 cat > ~/.config/gtk-4.0/settings.ini <<EOF
 [Settings]
 gtk-theme-name=adw-gtk3-dark
-gtk-icon-theme-name=BeautyLine
+gtk-icon-theme-name=NeonGrid
 gtk-cursor-theme-name=Bibata-Neon
 gtk-cursor-theme-size=24
 gtk-font-name=Rajdhani 11
