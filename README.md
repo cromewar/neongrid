@@ -7,8 +7,25 @@ Everything derives from one file — **`palette.sh`**. Change a hex there, re-ru
 `./install.sh`, and it propagates to KDE, GTK, Ghostty, btop, fzf, starship,
 Plymouth and the Limine boot menu.
 
+## Install on a new machine
+
 ```
-./install.sh                # everything user-level
+git clone <remote>/cyberdeck ~/cyberdeck && cd ~/cyberdeck
+./bootstrap.sh --dry-run    # show every action, change nothing
+./bootstrap.sh              # ONE password prompt, then hands-off
+```
+
+`bootstrap.sh` is the full build: packages, icon theme, cursor, shader wallpaper,
+KDE, GTK, Ghostty, shell, boot splash, bootloader and login screen. It asks for
+your password **exactly once** (`sudo -v` + keepalive), and adapts to the machine
+— Limine/Plymouth/plasmalogin steps are skipped if absent.
+
+Full runbook: `cromewar-os/03 - resources/runbooks/NEONGRID-CYBERPUNK-DESKTOP-GUIDE.md`
+
+## Iterating afterwards
+
+```
+./install.sh                # re-apply everything user-level
 ./install.sh --only ghostty # one layer: kde|gtk|ghostty|shell|panel|cursor|boot
 ./install.sh --root         # the privileged pass (cursor, greeter, boot)
 ```
