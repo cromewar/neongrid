@@ -29,7 +29,6 @@ MAP="
 com.mitchellh.ghostty|$SI/ghostty.svg|$GREEN_HERO|$CYAN
 openai-codex-desktop|$LOBE/openai.svg|$CYAN_BR|$GREEN
 claude-desktop|$SI/claude.svg|$GREEN_HERO|$YELLOW
-antigravity|$LOBE/antigravity.svg|$CYAN|$VIOLET
 antigravity-ide|$LOBE/antigravity.svg|$CYAN|$VIOLET
 brave-desktop|$SI/brave.svg|$VIOLET|$RED
 firefox|$SI/firefoxbrowser.svg|$MAGENTA|$RED_BR
@@ -64,6 +63,32 @@ while IFS='|' read -r name url c1 c2; do
   rm -f "$tmp"
   echo "  $name  #$c1 -> #$c2"
 done <<< "$MAP"
+
+# --- Antigravity vs Antigravity IDE -----------------------------------------
+# Upstream ships the SAME arch glyph for both; the only difference is that the
+# launcher sits on a rounded tile and the IDE is bare. Identical icons side by
+# side in a dock are useless, so we make that distinction explicit AND give them
+# different gradients:
+#   antigravity      -> arch inside a neon tile frame, green->cyan
+#   antigravity-ide  -> bare arch, cyan->violet (written by the MAP above)
+ARCH='M21.751 22.607c1.34 1.005 3.35.335 1.508-1.508C17.73 15.74 18.904 1 12.037 1 5.17 1 6.342 15.74.815 21.1c-2.01 2.009.167 2.511 1.507 1.506 5.192-3.517 4.857-9.714 9.715-9.714 4.857 0 4.522 6.197 9.714 9.715z'
+cat > "$OUT/antigravity.svg" <<EOF
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill-rule="evenodd">
+  <title>Antigravity</title>
+  <defs>
+    <linearGradient id="agFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="$(hx "$GREEN_HERO")"/>
+      <stop offset="1" stop-color="$(hx "$CYAN")"/>
+    </linearGradient>
+  </defs>
+  <rect x="0.9" y="0.9" width="22.2" height="22.2" rx="5.2"
+        fill="none" stroke="url(#agFill)" stroke-width="1.5" opacity="0.85"/>
+  <g transform="translate(12 12.4) scale(0.62) translate(-12 -12)">
+    <path d="$ARCH" fill="url(#agFill)"/>
+  </g>
+</svg>
+EOF
+echo "  antigravity  #$GREEN_HERO -> #$CYAN (tiled, to distinguish from the IDE)"
 
 # --- stragglers -------------------------------------------------------------
 # File manager + launcher come from BeautyLine, which paints the folder bright
