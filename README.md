@@ -7,6 +7,32 @@ Everything derives from one file — **`palette.sh`**. Change a hex there, re-ru
 `./install.sh`, and it propagates to KDE, GTK, Ghostty, btop, fzf, starship,
 Plymouth and the Limine boot menu.
 
+## Install
+
+**One line.** Clones to `~/cyberdeck` and opens the installer TUI:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/cromewar/neongrid/master/net-install.sh)
+```
+
+Non-interactive:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/cromewar/neongrid/master/net-install.sh) --dry-run   # show every action, change nothing
+bash <(curl -fsSL https://raw.githubusercontent.com/cromewar/neongrid/master/net-install.sh) --yes       # full install, no menu
+```
+
+Or clone it yourself:
+
+```bash
+git clone https://github.com/cromewar/neongrid.git ~/cyberdeck && cd ~/cyberdeck
+./install-tui.sh
+```
+
+It asks for your password **exactly once**, takes a snapper snapshot before touching
+anything, and adapts to the machine — the Limine, Plymouth and plasmalogin steps
+self-skip if you don't have them. Tested on CachyOS + Plasma 6.7.2 + Wayland.
+
 ![The desktop](docs/desktop.png)
 
 A live GLSL wireframe wallpaper, a translucent panel with a thin neon edge and a
@@ -29,37 +55,6 @@ the other trap — it looks sterile and kills the neon. Instead, every icon in t
 theme is **hue-snapped** into the palette (HSL: hue → nearest palette hue,
 saturation up, *lightness and gradients preserved*), and the dock apps get real
 vector brand marks, each with its own two-stop neon gradient.
-
-## Install
-
-One line. Clones to `~/cyberdeck` and opens the installer:
-
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/cromewar/neongrid/master/net-install.sh)
-```
-
-Non-interactive:
-
-```bash
-bash <(curl -fsSL .../net-install.sh) --dry-run   # show every action, change nothing
-bash <(curl -fsSL .../net-install.sh) --yes       # full install, no menu
-```
-
-Or clone it yourself:
-
-```bash
-git clone https://github.com/cromewar/neongrid.git ~/cyberdeck && cd ~/cyberdeck
-./install-tui.sh
-```
-
-`bootstrap.sh` is the full build: packages, icon theme, cursor, shader wallpaper,
-KDE, GTK, Ghostty, shell, boot splash, bootloader and login screen. It asks for
-your password **exactly once** (`sudo -v` + keepalive), and adapts to the machine
-— Limine/Plymouth/plasmalogin steps are skipped if absent.
-
-Tested on CachyOS + Plasma 6.7.2 + Wayland. It should work on any Arch-based
-Plasma 6 Wayland system; Limine / Plymouth / plasmalogin steps self-skip if the
-machine doesn't have them.
 
 ## Iterating afterwards
 

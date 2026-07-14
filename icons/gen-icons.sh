@@ -43,6 +43,18 @@ import re, sys
 src, dst, c1, c2 = sys.argv[1:5]
 s = open(src).read()
 s = re.sub(r'\sfill="(?!none)[^"]*"', '', s)   # drop the baked-in brand fill
+
+# ⚠ lobe-icons ship width="1em" height="1em" on the <svg> root. An intrinsic size
+#   of 1em resolves to ~16px, so the icon is RASTERIZED AT 16x16 AND UPSCALED —
+#   it renders visibly blurry at dock/tray sizes while simple-icons (which carry
+#   no width/height, only a viewBox) stay crisp. Strip the root's width/height so
+#   the viewBox alone drives scaling. Only the ROOT tag: inner <rect width=…> etc.
+#   must survive.
+m = re.search(r'<svg\b[^>]*>', s)
+if m:
+    root = re.sub(r'\s(?:width|height)="[^"]*"', '', m.group(0))
+    s = s[:m.start()] + root + s[m.end():]
+
 gid = "ngGrad"
 defs = (f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="1" y2="1">'
         f'<stop offset="0" stop-color="{c1}"/>'
