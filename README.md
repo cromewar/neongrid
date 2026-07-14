@@ -10,7 +10,7 @@ Plymouth and the Limine boot menu.
 ## Install on a new machine
 
 ```
-git clone <remote>/cyberdeck ~/cyberdeck && cd ~/cyberdeck
+git clone https://github.com/cromewar/neongrid.git ~/cyberdeck && cd ~/cyberdeck
 ./bootstrap.sh --dry-run    # show every action, change nothing
 ./bootstrap.sh              # ONE password prompt, then hands-off
 ```
