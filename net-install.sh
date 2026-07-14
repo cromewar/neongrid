@@ -58,16 +58,25 @@ chmod +x ./*.sh 2>/dev/null || true
 # ── hand off ────────────────────────────────────────────────────────────────
 # When piped from curl, stdin is the SCRIPT, not the keyboard — an interactive
 # menu would read the script's own bytes as keystrokes. Reattach the terminal.
-if [ ! -t 0 ] && [ -r /dev/tty ]; then
-  exec < /dev/tty
+#
+# ⚠ `[ -r /dev/tty ]` is NOT a valid test: the device node usually exists and is
+#    readable even when the process has no controlling terminal, and the redirect
+#    then fails with ENXIO ("No such device or address"), killing the script under
+#    `set -e`. The only reliable check is to actually try to open it.
+HAVE_TTY=0
+if [ -t 0 ]; then
+  HAVE_TTY=1
+elif ( : < /dev/tty ) 2>/dev/null; then
+  exec < /dev/tty                  # piped from curl, but a real terminal exists
+  HAVE_TTY=1
 fi
 
 if [ $# -gt 0 ]; then
   exec ./install-tui.sh "$@"       # --yes / --dry-run passed straight through
-elif [ -t 0 ]; then
+elif [ "$HAVE_TTY" = 1 ]; then
   exec ./install-tui.sh            # interactive menu
 else
-  # no terminal at all (CI, no /dev/tty): fall back to a safe dry run
-  printf '%s  ! no terminal available — running --dry-run. Re-run with --yes to install.%s\n' "$Y" "$N"
+  # no controlling terminal at all (CI, container): never silently install
+  printf '%s  ! no terminal — falling back to --dry-run. Re-run with: ... | bash -s -- --yes%s\n' "$Y" "$N"
   exec ./install-tui.sh --dry-run
 fi
