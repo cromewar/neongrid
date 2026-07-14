@@ -7,6 +7,29 @@ Everything derives from one file — **`palette.sh`**. Change a hex there, re-ru
 `./install.sh`, and it propagates to KDE, GTK, Ghostty, btop, fzf, starship,
 Plymouth and the Limine boot menu.
 
+![The desktop](docs/desktop.png)
+
+A live GLSL wireframe wallpaper, a translucent panel with a thin neon edge and a
+soft green bloom, and a dock whose icons are real brand marks recoloured into the
+palette.
+
+![Ghostty](docs/terminal.png)
+
+Ghostty over the wallpaper: real compositor blur, a green glow shadow on the
+focused window (Klassy), and the tuned ANSI palette. Note the diff colours — the
+**bulk** green is `#3be05c`, not `#39ff14`. Pure neon green is what paints every
+diff-add line and string literal, and at that saturation it glares over a long
+session, so the hero neon is reserved for accents (cursor, prompt, borders, glow).
+
+![Icons](docs/icons.png)
+
+Icons are the part that usually breaks a theme: every icon set keeps each app's
+**brand hue**, so a dock ends up a rainbow. Flattening them all to one colour is
+the other trap — it looks sterile and kills the neon. Instead, every icon in the
+theme is **hue-snapped** into the palette (HSL: hue → nearest palette hue,
+saturation up, *lightness and gradients preserved*), and the dock apps get real
+vector brand marks, each with its own two-stop neon gradient.
+
 ## Install on a new machine
 
 ```
@@ -20,7 +43,9 @@ KDE, GTK, Ghostty, shell, boot splash, bootloader and login screen. It asks for
 your password **exactly once** (`sudo -v` + keepalive), and adapts to the machine
 — Limine/Plymouth/plasmalogin steps are skipped if absent.
 
-Full runbook: `cromewar-os/03 - resources/runbooks/NEONGRID-CYBERPUNK-DESKTOP-GUIDE.md`
+Tested on CachyOS + Plasma 6.7.2 + Wayland. It should work on any Arch-based
+Plasma 6 Wayland system; Limine / Plymouth / plasmalogin steps self-skip if the
+machine doesn't have them.
 
 ## Iterating afterwards
 
