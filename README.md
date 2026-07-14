@@ -30,12 +30,26 @@ theme is **hue-snapped** into the palette (HSL: hue → nearest palette hue,
 saturation up, *lightness and gradients preserved*), and the dock apps get real
 vector brand marks, each with its own two-stop neon gradient.
 
-## Install on a new machine
+## Install
 
+One line. Clones to `~/cyberdeck` and opens the installer:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/cromewar/neongrid/master/net-install.sh)
 ```
+
+Non-interactive:
+
+```bash
+bash <(curl -fsSL .../net-install.sh) --dry-run   # show every action, change nothing
+bash <(curl -fsSL .../net-install.sh) --yes       # full install, no menu
+```
+
+Or clone it yourself:
+
+```bash
 git clone https://github.com/cromewar/neongrid.git ~/cyberdeck && cd ~/cyberdeck
-./bootstrap.sh --dry-run    # show every action, change nothing
-./bootstrap.sh              # ONE password prompt, then hands-off
+./install-tui.sh
 ```
 
 `bootstrap.sh` is the full build: packages, icon theme, cursor, shader wallpaper,
