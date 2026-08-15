@@ -130,6 +130,7 @@ if [ ! -d "$SHADER_SRC" ]; then
 fi
 run env INSTALL_PREFIX=/usr BUILD_TYPE=Release bash "$SHADER_SRC/scripts/build.sh" build
 run bash "$REPO/wallpapers/gen-wallpaper-shader.sh"
+run bash "$REPO/wallpapers/gen-wallpaper-shader.sh" --light
 
 # ── 6. apply KDE ────────────────────────────────────────────────────────────
 step "Applying KDE (colors, Darkly, Klassy, blur, fonts, icons)"

@@ -3,7 +3,14 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$HERE/.." && pwd)"
-FRAG="$REPO/wallpapers/neongrid.frag"
+
+# Follow the active colour scheme. A near-black grid under a light UI is the
+# single thing that made NeonGrid Light read as broken rather than as a light
+# theme: every translucent window blurs against it and turns to grey mud.
+case "$(kreadconfig6 --file kdeglobals --group General --key ColorScheme)" in
+  *Light) FRAG="$REPO/wallpapers/neongrid-light.frag" ;;
+  *)      FRAG="$REPO/wallpapers/neongrid.frag" ;;
+esac
 [ -f "$FRAG" ] || { echo "  !! missing $FRAG" >&2; exit 1; }
 
 qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "

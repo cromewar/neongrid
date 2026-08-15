@@ -24,7 +24,8 @@ done
 [ -n "$SRC" ] || {
   echo "ERROR: Grid_Landscape.frag not found — is .build-shader/ cloned?" >&2; exit 1; }
 
-OUT="$HERE/neongrid.frag"
+MODE="dark"
+[ "${1:-}" = "--light" ] && MODE="light"
 
 # hex -> "r, g, b" GLSL floats
 glsl() {
@@ -32,11 +33,26 @@ glsl() {
     'BEGIN { printf "%.3f, %.3f, %.3f", r/255*s, g/255*s, b/255*s }'
 }
 
-# Grid lines are dimmed to ~45%: at full hero-green this reads as a blinding
-# Tron floor and fights every window sitting on top of it. The wallpaper is
-# background, not the subject.
-LINES="$(glsl "$GREEN" 0.45)"
-FIELD="$(glsl "$SEL_BG" 0.30)"
+if [ "$MODE" = "light" ]; then
+  neongrid_light
+  OUT="$HERE/neongrid-light.frag"
+  # No dimming here. On a dark field the scale factor pulls the colour toward
+  # black, which is what keeps the dark wallpaper subdued — apply the same
+  # factor on a light field and you get grey mud instead of paper.
+  FIELD="$(glsl "$BG")"
+  LINES="$(glsl "$GREEN")"
+  FIELD_NOTE="near-white field"
+  LINES_NOTE="deep green wireframe"
+else
+  OUT="$HERE/neongrid.frag"
+  # Grid lines are dimmed to ~45%: at full hero-green this reads as a blinding
+  # Tron floor and fights every window sitting on top of it. The wallpaper is
+  # background, not the subject.
+  LINES="$(glsl "$GREEN" 0.45)"
+  FIELD="$(glsl "$SEL_BG" 0.30)"
+  FIELD_NOTE="deep violet field"
+  LINES_NOTE="hero green wireframe"
+fi
 
 # Write via a temp file: `> "$OUT"` truncates before sed runs, so a failure here
 # used to leave neongrid.frag as an empty tracked file and abort the install.
@@ -44,11 +60,24 @@ TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT
 
 sed -E \
-  -e "s|^#define GRID_COLOR_1 .*|#define GRID_COLOR_1 vec3($FIELD) // neongrid: deep violet field|" \
-  -e "s|^#define GRID_COLOR_2 .*|#define GRID_COLOR_2 vec3($LINES) // neongrid: hero green wireframe|" \
+  -e "s|^#define GRID_COLOR_1 .*|#define GRID_COLOR_1 vec3($FIELD) // neongrid: $FIELD_NOTE|" \
+  -e "s|^#define GRID_COLOR_2 .*|#define GRID_COLOR_2 vec3($LINES) // neongrid: $LINES_NOTE|" \
   "$SRC" > "$TMP"
 
-grep -q "neongrid: hero green" "$TMP" || { echo "ERROR: shader defines not patched" >&2; exit 1; }
+if [ "$MODE" = "light" ]; then
+  # The stock distance fog is `color *= 1.0 - smoothstep(...)`, i.e. it
+  # multiplies toward BLACK. That is invisible on a near-black field and is
+  # exactly right for the dark variant, but on paper it drops a filthy dark
+  # vignette across the horizon. Fade toward the field colour instead so the
+  # grid recedes into the background rather than into a bruise.
+  sed -i -E \
+    "s|^([[:space:]]*)color \*= 1\.0 - smoothstep\(0\.0, MAX_DIST\*0\.9, hit\.dist\);|\1color = mix(color, GRID_COLOR_1, smoothstep(0.0, MAX_DIST*0.9, hit.dist)); // neongrid: fog to field, not to black|" \
+    "$TMP"
+  grep -q "neongrid: fog to field" "$TMP" \
+    || { echo "ERROR: distance-fog line not patched — did the shader change?" >&2; exit 1; }
+fi
+
+grep -q "neongrid: $LINES_NOTE" "$TMP" || { echo "ERROR: shader defines not patched" >&2; exit 1; }
 mv -f "$TMP" "$OUT"
 chmod 644 "$OUT"
 echo "wrote $OUT (source: $SRC)"

@@ -1,0 +1,6 @@
+[Unit]
+Description=NeonGrid — sync shader wallpaper to the active colour scheme
+
+[Service]
+Type=oneshot
+ExecStart=%h/cyberdeck/kde/theme-sync.sh

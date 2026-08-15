@@ -1,0 +1,11 @@
+[Unit]
+Description=NeonGrid — watch for colour scheme changes
+
+[Path]
+# Every theme switch — the Global Theme page, the Brightness & Color applet's
+# Dark Mode toggle, and the automatic day/night switch — lands as a write to
+# kdeglobals. Watching the file catches all three without polling.
+PathChanged=%h/.config/kdeglobals
+
+[Install]
+WantedBy=default.target

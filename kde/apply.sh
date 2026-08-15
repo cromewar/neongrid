@@ -30,6 +30,11 @@ kw --file kdeglobals --group KDE --key widgetStyle Darkly
 # icons get a thin accent line instead of a filled magenta slab.
 bash "$HERE/apply-desktoptheme.sh"
 
+# --- keep the wallpaper in step with dark/light ---------------------------
+# Plasma cannot carry a wallpaper PLUGIN's config in a Global Theme, so a
+# watcher swaps the shader when the colour scheme changes.
+bash "$HERE/apply-theme-sync.sh"
+
 # --- window decoration --------------------------------------------------
 # Group name differs across KDecoration 2/3; set both, the live one wins.
 for grp in org.kde.kdecoration2 org.kde.kdecoration3; do
