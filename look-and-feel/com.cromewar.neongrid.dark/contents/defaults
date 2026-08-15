@@ -22,7 +22,7 @@
 widgetStyle=Darkly
 
 [kdeglobals][General]
-ColorScheme=NeonGrid
+ColorScheme=NeonGridDark
 
 [kdeglobals][Icons]
 Theme=NeonGrid

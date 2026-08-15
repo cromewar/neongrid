@@ -1,6 +1,6 @@
 [General]
-ColorScheme=NeonGrid
-Name=NeonGrid
+ColorScheme=NeonGridDark
+Name=NeonGrid Dark
 accent=57,255,20
 shadeSortColumn=true
 

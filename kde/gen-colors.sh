@@ -3,7 +3,7 @@
 # Darkly + Kirigami + kde-gtk-config all read this, so it is what makes the
 # neon accent reach every Qt app, System Settings, and GTK3 without extra work.
 #
-#   gen-colors.sh [outfile]            -> NeonGrid.colors      (dark)
+#   gen-colors.sh [outfile]            -> NeonGridDark.colors  (dark)
 #   gen-colors.sh --light [outfile]    -> NeonGridLight.colors (light)
 #
 # Both variants run through the SAME emitter below; only the palette bindings
@@ -26,8 +26,8 @@ if [ "$MODE" = "light" ]; then
   SCHEME="NeonGridLight"
   DISPLAY="NeonGrid Light"
 else
-  SCHEME="NeonGrid"
-  DISPLAY="NeonGrid"
+  SCHEME="NeonGridDark"
+  DISPLAY="NeonGrid Dark"
 fi
 
 OUT="${OUT:-$(dirname "$0")/$SCHEME.colors}"

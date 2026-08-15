@@ -8,11 +8,11 @@ source "$HERE/../palette.sh"
 kw() { kwriteconfig6 "$@"; }
 
 # --- color schemes + global themes --------------------------------------
-# Installs BOTH schemes (NeonGrid, NeonGrid Light) and registers both as real
+# Installs BOTH schemes (NeonGrid Dark, NeonGrid Light) and registers both as real
 # Global Themes. That registration is what stops a stray click in System
 # Settings -> Global Theme from resetting the desktop to Breeze.
 bash "$HERE/apply-lookandfeel.sh"
-plasma-apply-colorscheme NeonGrid >/dev/null 2>&1 || true
+plasma-apply-colorscheme NeonGridDark >/dev/null 2>&1 || true
 
 # Accent. Critical: accentColorFromWallpaper MUST be false, or the animated
 # shader wallpaper overwrites the neon green on every wallpaper change.

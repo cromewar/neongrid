@@ -14,11 +14,20 @@ REPO="$(cd "$HERE/.." && pwd)"
 SCHEMES="$HOME/.local/share/color-schemes"
 LNF_DIR="$HOME/.local/share/plasma/look-and-feel"
 
+# --- retire the pre-rename identifiers ----------------------------------
+# The dark variant used to be the bare id `com.cromewar.neongrid` / scheme
+# `NeonGrid`. That read as the family name rather than as a variant, so the
+# Global Theme grid showed "NeonGrid" next to "NeonGrid Light" with nothing
+# saying which was dark. Both halves are now explicit. Delete the old ids or
+# they linger in the KCM as a stale duplicate that still resolves.
+rm -rf "$LNF_DIR/com.cromewar.neongrid"
+rm -f  "$SCHEMES/NeonGrid.colors"
+
 # --- colour schemes -----------------------------------------------------
-bash "$HERE/gen-colors.sh"         "$HERE/NeonGrid.colors"      >/dev/null
+bash "$HERE/gen-colors.sh"         "$HERE/NeonGridDark.colors"  >/dev/null
 bash "$HERE/gen-colors.sh" --light "$HERE/NeonGridLight.colors" >/dev/null
 mkdir -p "$SCHEMES"
-cp -f "$HERE/NeonGrid.colors"      "$SCHEMES/NeonGrid.colors"
+cp -f "$HERE/NeonGridDark.colors"  "$SCHEMES/NeonGridDark.colors"
 cp -f "$HERE/NeonGridLight.colors" "$SCHEMES/NeonGridLight.colors"
 
 # --- global themes ------------------------------------------------------
@@ -43,7 +52,7 @@ install_lnf() {
   [ -d "$dest" ] || { echo "  !! failed to install $id" >&2; return 1; }
 }
 
-install_lnf "$REPO/look-and-feel/com.cromewar.neongrid"       com.cromewar.neongrid
+install_lnf "$REPO/look-and-feel/com.cromewar.neongrid.dark"  com.cromewar.neongrid.dark
 install_lnf "$REPO/look-and-feel/com.cromewar.neongrid.light" com.cromewar.neongrid.light
 
 # --- the light/dark PAIR ------------------------------------------------
@@ -61,9 +70,9 @@ install_lnf "$REPO/look-and-feel/com.cromewar.neongrid.light" com.cromewar.neong
 kwriteconfig6 --file kdeglobals --group KDE \
   --key DefaultLightLookAndFeel com.cromewar.neongrid.light
 kwriteconfig6 --file kdeglobals --group KDE \
-  --key DefaultDarkLookAndFeel com.cromewar.neongrid
+  --key DefaultDarkLookAndFeel com.cromewar.neongrid.dark
 kwriteconfig6 --file kdeglobals --group KDE \
-  --key LookAndFeelPackage com.cromewar.neongrid
+  --key LookAndFeelPackage com.cromewar.neongrid.dark
 
-echo "  colour schemes -> NeonGrid, NeonGrid Light"
+echo "  colour schemes -> NeonGrid Dark, NeonGrid Light"
 echo "  global themes  -> $(ls "$LNF_DIR" | tr '\n' ' ')"

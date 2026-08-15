@@ -4,13 +4,13 @@
 # The two packages are identical apart from which colour scheme they select, so
 # the light variant is GENERATED rather than maintained by hand — otherwise the
 # lock screen QML would have to be kept in sync in two places and would quietly
-# drift. Dark is the source of truth; edit look-and-feel/com.cromewar.neongrid/
-# and re-run this.
+# drift. Dark is the source of truth; edit
+# look-and-feel/com.cromewar.neongrid.dark/ and re-run this.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$HERE/.." && pwd)"
 
-DARK="$REPO/look-and-feel/com.cromewar.neongrid"
+DARK="$REPO/look-and-feel/com.cromewar.neongrid.dark"
 LIGHT="$REPO/look-and-feel/com.cromewar.neongrid.light"
 
 [ -d "$DARK" ] || { echo "ERROR: missing $DARK" >&2; exit 1; }
@@ -21,7 +21,7 @@ cp -a "$DARK" "$LIGHT"
 # Only the colour scheme differs. Everything else — icons, Plasma style, cursor,
 # decoration, widget style — is shared, because NeonGrid's icon set and dock
 # indicators are built to read on either background.
-sed -i 's|^ColorScheme=NeonGrid$|ColorScheme=NeonGridLight|' "$LIGHT/contents/defaults"
+sed -i 's|^ColorScheme=NeonGridDark$|ColorScheme=NeonGridLight|' "$LIGHT/contents/defaults"
 grep -q '^ColorScheme=NeonGridLight$' "$LIGHT/contents/defaults" \
   || { echo "ERROR: colour scheme not switched — did defaults change shape?" >&2; exit 1; }
 

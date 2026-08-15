@@ -5,9 +5,9 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$HERE/.." && pwd)"
 FRAG="$REPO/wallpapers/neongrid.frag"
-PKG="$REPO/look-and-feel/com.cromewar.neongrid"
+PKG="$REPO/look-and-feel/com.cromewar.neongrid.dark"
 PLUGIN="online.knowmad.shaderwallpaper"
-LNF="com.cromewar.neongrid"
+LNF="com.cromewar.neongrid.dark"
 
 [ -f "$FRAG" ] || { echo "  !! missing $FRAG" >&2; exit 1; }
 [ -d "$PKG" ] || { echo "  !! missing $PKG" >&2; exit 1; }
