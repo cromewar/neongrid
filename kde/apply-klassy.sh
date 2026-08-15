@@ -42,14 +42,33 @@ kk --group WindowOutlineStyle --key WindowOutlineSnapToWholePixel --type bool tr
 # light variant therefore uses its own accent green — darker, still 94%
 # saturated — at reduced strength, which lands as a green halo rather than as
 # either glare or grey.
-kk --group ShadowStyle --key ShadowSize ShadowVeryLarge
+# The keys are ShadowColorActive / ShadowSizeActive / ShadowStrengthActive, per
+# Klassy's own schema — the group takes an Active/Inactive parameter and the
+# suffix is part of the key name. Writing bare `ShadowColor` etc. silently does
+# nothing: Klassy falls through to its default shadow, which is 0,0,0 BLACK and
+# therefore invisible on a dark wallpaper. That is why there was no halo on any
+# window in either mode while the panels (a separate Panel Colorizer shadow)
+# glowed correctly.
 if [ "$BG" = "f7faf8" ]; then     # light palette is loaded
-  kk --group ShadowStyle --key ShadowColor "$(rgb "$GREEN_HERO")"
-  kk --group ShadowStyle --key ShadowStrength 190
+  ACTIVE_STRENGTH=190
+  INACTIVE_STRENGTH=90
 else
-  kk --group ShadowStyle --key ShadowColor "$(rgb "$GREEN_HERO")"
-  kk --group ShadowStyle --key ShadowStrength 255
+  ACTIVE_STRENGTH=255
+  INACTIVE_STRENGTH=110
 fi
+kk --group ShadowStyle --key ShadowColorActive      "$(rgb "$GREEN_HERO")"
+kk --group ShadowStyle --key ShadowStrengthActive   "$ACTIVE_STRENGTH"
+kk --group ShadowStyle --key ShadowSizeActive       ShadowVeryLarge
+# Unfocused windows get the violet, matching the outline's focus cue.
+kk --group ShadowStyle --key ShadowColorInactive    "$(rgb "$VIOLET")"
+kk --group ShadowStyle --key ShadowStrengthInactive "$INACTIVE_STRENGTH"
+kk --group ShadowStyle --key ShadowSizeInactive     ShadowLarge
+
+# Drop the inert keys an earlier version wrote, so the file does not read as
+# though it were configuring something.
+for stale in ShadowColor ShadowStrength ShadowSize; do
+  kwriteconfig6 --file klassy/klassyrc --group ShadowStyle --key "$stale" --delete 2>/dev/null || true
+done
 
 # --- translucent, blurred titlebars -------------------------------------
 kk --group TitleBarOpacity --key ActiveTitleBarOpacity 88

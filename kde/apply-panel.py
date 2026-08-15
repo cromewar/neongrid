@@ -130,18 +130,19 @@ def patch(g):
     b.setdefault("radius", {"enabled": True, "corner": dict.fromkeys(
         ("topLeft", "topRight", "bottomRight", "bottomLeft"), 10)})
 
+    # The glow lives here: a soft, low-alpha green bloom behind the slab, to
+    # match the halo Klassy puts around windows. Both variants get it.
+    #
+    # What made this look filthy on light earlier was NOT the glow — it was the
+    # doubled native panel edge below, plus a 0.55 hairline that washed out. The
+    # bloom itself only needs pulling in, because a shadow composites downward:
+    # the same alpha and radius that read as spill on near-black read as a
+    # smudge on paper.
     sh = panel["shadow"]["background"]
     sh["enabled"] = True
-    if LIGHT:
-        # An ordinary drop shadow, offset downward. Tinting it green here just
-        # smears the panel edge into the wallpaper.
-        set_system_color(sh["color"], "textColor", "View", hx("FG"), 0.16)
-        geom = (("size", 10), ("xOffset", 0), ("yOffset", 2))
-    else:
-        # The glow lives here: a soft, low-alpha green bloom behind the slab.
-        set_system_color(sh["color"], "positiveTextColor", "View", hx("GREEN"), 0.35)
-        geom = (("size", 24), ("xOffset", 0), ("yOffset", 0))
-    for k, v in geom:
+    set_system_color(sh["color"], "positiveTextColor", "View", hx("GREEN"),
+                     0.30 if LIGHT else 0.35)
+    for k, v in (("size", 18 if LIGHT else 24), ("xOffset", 0), ("yOffset", 0)):
         sh[k] = v
 
     # Turn OFF Plasma's own panel background. Panel Colorizer paints its slab
