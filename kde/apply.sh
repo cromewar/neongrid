@@ -24,6 +24,11 @@ kw --file kdeglobals --group General --key accentColorFromWallpaper --type bool 
 # (including QML/Kirigami, which Kvantum cannot theme) with no SVG editing.
 kw --file kdeglobals --group KDE --key widgetStyle Darkly
 
+# --- Plasma style -------------------------------------------------------
+# Inherits Breeze; overrides only widgets/tasks.svg so hovered/active dock
+# icons get a thin accent line instead of a filled magenta slab.
+bash "$HERE/apply-desktoptheme.sh"
+
 # --- window decoration --------------------------------------------------
 # Group name differs across KDecoration 2/3; set both, the live one wins.
 for grp in org.kde.kdecoration2 org.kde.kdecoration3; do

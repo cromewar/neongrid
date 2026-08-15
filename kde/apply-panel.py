@@ -133,6 +133,21 @@ def patch(g):
 #   Cider_status_icon_1 | Antigravity_status_icon_1
 #   chrome_status_icon_1@ticktick | chrome_status_icon_1@ChatGPT
 #   chrome_status_icon_1@notion-calendar
+
+
+def ci(s):
+    """Case-insensitive pattern as character classes.
+
+    Panel Colorizer compiles these with a bare `new RegExp(match)` (no flags
+    argument), and ECMAScript has no `(?i)` inline modifier — that is PCRE/
+    Python syntax. A `(?i)` rule therefore throws "Invalid regular expression:
+    Invalid group" INSIDE the `.find()` predicate, which aborts the entire
+    lookup: every rule after the bad one stops working and plasmashell logs the
+    throw once per tray item per repaint. Expand to `[Ll]` classes instead.
+    """
+    return "".join(f"[{c.lower()}{c.upper()}]" if c.isalpha() else c for c in s)
+
+
 TRAY_RULES = [
     {"description": "Cohesion",        "match": "^cohesion_status_icon",    "icon": "io.github.brunofin.Cohesion", "enabled": True},
     {"description": "Slack",           "match": "^Slack_status_icon",       "icon": "slack",                       "enabled": True},
@@ -141,9 +156,9 @@ TRAY_RULES = [
     {"description": "Antigravity",     "match": "^Antigravity_status_icon", "icon": "antigravity",                 "enabled": True},
     {"description": "ChatGPT",         "match": "ChatGPT",                  "icon": "chatgpt",                     "enabled": True},
     {"description": "Notion Calendar", "match": "notion-calendar",          "icon": "notion-calendar",             "enabled": True},
-    {"description": "Linear",          "match": "(?i)linear",               "icon": "linear-linux",                "enabled": True},
-    {"description": "Proton Mail",     "match": "(?i)proton[- ]?mail",      "icon": "proton-mail",                 "enabled": True},
-    {"description": "TickTick",        "match": "(?i)ticktick",             "icon": "ticktick",                    "enabled": True},
+    {"description": "Linear",          "match": ci("linear"),               "icon": "linear-linux",                "enabled": True},
+    {"description": "Proton Mail",     "match": ci("proton") + "[- ]?" + ci("mail"),      "icon": "proton-mail",                 "enabled": True},
+    {"description": "TickTick",        "match": ci("ticktick"),             "icon": "ticktick",                    "enabled": True},
     {"description": "Codex",           "match": "^(Codex|openai)",          "icon": "openai-codex-desktop",        "enabled": True},
     {"description": "Arch-Update",     "match": "^Arch-Update",             "icon": "system-software-update",      "enabled": True},
 ]

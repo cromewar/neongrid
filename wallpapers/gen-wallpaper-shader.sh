@@ -11,7 +11,19 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 source "$HERE/../palette.sh"
 
-SRC=/usr/share/plasma/wallpapers/online.knowmad.shaderwallpaper/contents/ui/Shaders/Grid_Landscape.frag
+# The installed plugin is the preferred source, but on a fresh machine this runs
+# BEFORE the root pass has done `make install` — so fall back to the build tree.
+# (Sourcing only from /usr made this step unsatisfiable on a first install.)
+SRC=""
+for c in \
+  /usr/share/plasma/wallpapers/online.knowmad.shaderwallpaper/contents/ui/Shaders/Grid_Landscape.frag \
+  "$HERE/../.build-shader/package/contents/ui/Shaders/Grid_Landscape.frag"
+do
+  [ -f "$c" ] && { SRC="$c"; break; }
+done
+[ -n "$SRC" ] || {
+  echo "ERROR: Grid_Landscape.frag not found — is .build-shader/ cloned?" >&2; exit 1; }
+
 OUT="$HERE/neongrid.frag"
 
 # hex -> "r, g, b" GLSL floats
@@ -26,11 +38,18 @@ glsl() {
 LINES="$(glsl "$GREEN" 0.45)"
 FIELD="$(glsl "$SEL_BG" 0.30)"
 
+# Write via a temp file: `> "$OUT"` truncates before sed runs, so a failure here
+# used to leave neongrid.frag as an empty tracked file and abort the install.
+TMP="$(mktemp)"
+trap 'rm -f "$TMP"' EXIT
+
 sed -E \
   -e "s|^#define GRID_COLOR_1 .*|#define GRID_COLOR_1 vec3($FIELD) // neongrid: deep violet field|" \
   -e "s|^#define GRID_COLOR_2 .*|#define GRID_COLOR_2 vec3($LINES) // neongrid: hero green wireframe|" \
-  "$SRC" > "$OUT"
+  "$SRC" > "$TMP"
 
-grep -q "neongrid: hero green" "$OUT" || { echo "ERROR: shader defines not patched" >&2; exit 1; }
-echo "wrote $OUT"
+grep -q "neongrid: hero green" "$TMP" || { echo "ERROR: shader defines not patched" >&2; exit 1; }
+mv -f "$TMP" "$OUT"
+chmod 644 "$OUT"
+echo "wrote $OUT (source: $SRC)"
 grep -E "^#define GRID_COLOR" "$OUT"

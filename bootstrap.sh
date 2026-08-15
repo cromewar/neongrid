@@ -103,6 +103,7 @@ run paru -S --needed --noconfirm \
 # ── 4. generated theme assets ───────────────────────────────────────────────
 step "Generating theme from palette.sh"
 run bash "$REPO/kde/gen-colors.sh"
+run python3 "$REPO/kde/gen-desktoptheme.py"
 run bash "$REPO/ghostty/gen-theme.sh"
 run bash "$REPO/ghostty/gen-shader.sh"
 run bash "$REPO/gtk/gen-gtk.sh"

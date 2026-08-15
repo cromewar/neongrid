@@ -12,6 +12,9 @@ paru -S --rebuild --noconfirm \
 echo
 echo "Re-applying effect config and restarting the shell…"
 bash "$(dirname "$0")/kde/apply-effects.sh"
+# The Plasma style is derived FROM the installed Breeze tasks.svg, so a
+# plasma-workspace upgrade can move the frame ids out from under it.
+bash "$(dirname "$0")/kde/apply-desktoptheme.sh"
 qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || true
 systemctl --user restart plasma-plasmashell.service
 
