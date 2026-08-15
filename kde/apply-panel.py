@@ -90,12 +90,24 @@ def set_system_color(node, system_color, color_set, hexval, alpha=1.0):
     node["alpha"] = alpha
 
 
+LIGHT = subprocess.run(
+    ["kreadconfig6", "--file", "kdeglobals", "--group", "General", "--key", "ColorScheme"],
+    capture_output=True, text=True).stdout.strip().endswith("Light")
+
+
 def patch(g):
     panel = g["panel"]["normal"]
     panel["enabled"] = True
     panel["blurBehind"] = True
 
-    set_system_color(panel["backgroundColor"], "backgroundColor", "View", hx("BG"), 0.72)
+    # The colour SOURCES follow the scheme on their own (see set_system_color),
+    # but alpha and shadow geometry cannot — and those are what actually break
+    # on light. A 0.55-alpha green hairline over near-white is a washed-out
+    # sage smear, and a 24px green bloom becomes a dirty halo. Glow is a
+    # dark-theme device: on light, raise the border to a crisp hairline and
+    # replace the bloom with an ordinary drop shadow.
+    bg_alpha = 0.82 if LIGHT else 0.72
+    set_system_color(panel["backgroundColor"], "backgroundColor", "View", hx("BG"), bg_alpha)
     set_system_color(panel["foregroundColor"], "textColor", "View", hx("FG"), 1)
 
     panel["radius"] = {"enabled": True, "corner": dict.fromkeys(
@@ -113,16 +125,33 @@ def patch(g):
     b["width"] = 1
     if "color" not in b:
         b["color"] = json.loads(json.dumps(panel["foregroundColor"]))
-    set_system_color(b["color"], "positiveTextColor", "View", hx("GREEN"), 0.55)
+    set_system_color(b["color"], "positiveTextColor", "View", hx("GREEN"),
+                     0.85 if LIGHT else 0.55)
     b.setdefault("radius", {"enabled": True, "corner": dict.fromkeys(
         ("topLeft", "topRight", "bottomRight", "bottomLeft"), 10)})
 
-    # The glow lives here: a soft, low-alpha green bloom behind the slab.
     sh = panel["shadow"]["background"]
     sh["enabled"] = True
-    set_system_color(sh["color"], "positiveTextColor", "View", hx("GREEN"), 0.35)
-    for k, v in (("size", 24), ("xOffset", 0), ("yOffset", 0)):
+    if LIGHT:
+        # An ordinary drop shadow, offset downward. Tinting it green here just
+        # smears the panel edge into the wallpaper.
+        set_system_color(sh["color"], "textColor", "View", hx("FG"), 0.16)
+        geom = (("size", 10), ("xOffset", 0), ("yOffset", 2))
+    else:
+        # The glow lives here: a soft, low-alpha green bloom behind the slab.
+        set_system_color(sh["color"], "positiveTextColor", "View", hx("GREEN"), 0.35)
+        geom = (("size", 24), ("xOffset", 0), ("yOffset", 0))
+    for k, v in geom:
         sh[k] = v
+
+    # Turn OFF Plasma's own panel background. Panel Colorizer paints its slab
+    # ON TOP of the native one rather than replacing it, so with both enabled
+    # every panel carries two edges and two shadows. On the dark theme that was
+    # invisible — a dark native edge under a dark slab — but on light it is the
+    # doubled outline that made the top and bottom bars look wrong.
+    npb = g["nativePanel"]["background"]
+    npb["enabled"] = False
+    npb["shadow"] = False
 
     # Widgets: no per-widget slabs (that was the boxy mess).
     # Deliberately DO NOT force a single foreground color on icons — that

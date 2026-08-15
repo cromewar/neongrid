@@ -45,4 +45,9 @@ bash "$HERE/apply-lockscreen.sh" >/dev/null 2>&1 || true
 # changes immediately — the visible half is the one that keeps up.
 bash "$HERE/apply-klassy.sh" >/dev/null 2>&1 || true
 
+# Panel Colorizer colour SOURCES follow the scheme, but the border alpha and
+# the shadow geometry are baked into its config, and those are what break on
+# light (washed hairline + green halo). Rewrite them for the new mode.
+python3 "$HERE/apply-panel.py" >/dev/null 2>&1 || true
+
 echo "neongrid: wallpaper -> ${WANT##*/}"
