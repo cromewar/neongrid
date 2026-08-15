@@ -19,11 +19,17 @@ Why a whole Plasma style for one SVG:
   it wrong makes indicators jump or clip) and only change opacities and classes.
 
 What actually changes:
-  Breeze ALREADY draws a bright accent line on the frame's `top` edge — focus at
-  .90, hover at 1.0. That line is the good part and is what the reference dock
-  shows. Everything else in the frame is the slab. So: zero the slab segments,
-  keep the line, and recolor the `normal` (running-but-not-active) line from
-  grey Text to the accent so a running app reads green rather than grey.
+  Breeze already draws a brighter accent line on one edge of the frame; the rest
+  is the slab. So: zero the slab segments, keep the line, and recolor the
+  `normal` (running-but-not-active) line from grey Text to the accent so a
+  running app reads green rather than grey.
+
+  Which edge the line goes on is NOT cosmetic guesswork — FrameSvg composes the
+  9-slice by element NAME in screen orientation, so `<prefix>-bottom` always
+  paints along the visual bottom regardless of panel edge. Verified by rendering
+  a probe build with `-top` red and `-bottom` blue. The directional prefixes
+  exist so the ARTWORK can differ per edge, not because the names rotate. So the
+  indicator edge has to be chosen per prefix — see EDGE below.
 
 Regenerate after a plasma-workspace update:  ./install.sh --only kde
 """
@@ -38,10 +44,20 @@ BREEZE = "/usr/share/plasma/desktoptheme/default/widgets/tasks.svgz"
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "desktoptheme", "NeonGrid")
 
-# The 9-slice segments that make up the filled brick. Zeroing these leaves the
-# frame's `top*` segments, which is where Breeze draws the indicator line.
-SLAB = ("center", "left", "right", "bottom", "bottomleft", "bottomright")
-LINE = ("top", "topleft", "topright")
+SEGMENTS = ("center", "top", "bottom", "left", "right",
+            "topleft", "topright", "bottomleft", "bottomright")
+
+# The indicator sits on the edge nearest the screen edge, so it depends on where
+# the panel is. Prefix "" is the fallback set, which is what a BOTTOM panel gets:
+# taskPrefix() returns ["south-<state>", "<state>"] and Breeze ships no `south-`
+# elements, so the unprefixed frame is what a bottom dock actually renders.
+# Everything not listed for a prefix is slab and gets zeroed.
+EDGE = {
+    "":       ("bottom", "bottomleft", "bottomright"),  # bottom panel
+    "north-": ("top", "topleft", "topright"),           # top panel
+    "west-":  ("left", "topleft", "bottomleft"),        # left panel
+    "east-":  ("right", "topright", "bottomright"),     # right panel
+}
 
 # state -> (line opacity, line colour class or None to keep Breeze's)
 # `normal` is a running, non-active task: Breeze paints it grey Text at .33,
@@ -55,8 +71,6 @@ STATES = {
     "attention": (".95", None),   # NeutralText — must stay loud
     "progress":  (".70", None),
 }
-# Breeze ships the same frames rotated for each panel edge.
-PREFIXES = ("", "north-", "east-", "west-")
 
 
 def group_span(src, start):
@@ -84,9 +98,9 @@ def main():
         src = fh.read()
 
     edits = 0
-    for prefix in PREFIXES:
+    for prefix, line_segs in EDGE.items():
         for state, (line_op, line_cls) in STATES.items():
-            for seg in SLAB + LINE:
+            for seg in SEGMENTS:
                 gid = f"{prefix}{state}-{seg}"
                 m = re.search(rf'<g id="{re.escape(gid)}"', src)
                 if not m:
@@ -96,7 +110,7 @@ def main():
                 tag = src[m.start():open_end]
                 body = src[open_end:end]
 
-                if seg in SLAB:
+                if seg not in line_segs:
                     # Hide the brick outright. Zeroing the GROUP opacity is
                     # enough — every child inherits it.
                     tag = set_attr(tag, "opacity", "0")
@@ -113,10 +127,10 @@ def main():
 
     # A silent no-op here would ship a stock Breeze file and look like the fix
     # simply did not work, so fail loudly if the ids ever move.
-    expected = len(PREFIXES) * len(STATES) * len(SLAB + LINE)
+    expected = len(EDGE) * len(STATES) * len(SEGMENTS)
     if edits < expected * 0.8:
         sys.exit(f"ERROR: only patched {edits}/{expected} frame segments — "
-                 "Breeze's tasks.svg ids changed; update SLAB/LINE/STATES.")
+                 "Breeze's tasks.svg ids changed; update EDGE/SEGMENTS/STATES.")
 
     shutil.rmtree(OUT, ignore_errors=True)
     os.makedirs(os.path.join(OUT, "widgets"), exist_ok=True)
