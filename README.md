@@ -54,13 +54,20 @@ Icons are the part that usually breaks a theme: every icon set keeps each app's
 the other trap — it looks sterile and kills the neon. Instead, every icon in the
 theme is **hue-snapped** into the palette (HSL: hue → nearest palette hue,
 saturation up, *lightness and gradients preserved*), and the dock apps get real
-vector brand marks, each with its own two-stop neon gradient.
+vector brand marks, each with its own two-stop neon gradient — Ghostty, Claude,
+ChatGPT, Codex, Brave, Firefox, Obsidian, TickTick, Notion / Cohesion, T3 Code,
+Linear, Proton Mail, Notion Calendar, Affinity.
+
+The installer also rebuilds the **two-panel layout** from the reference machine:
+a 64px floating bottom dock (dodge-windows, fit-content) with the same pinned
+apps that exist on the target box, and a 34px top bar (pager, pomodoro, tray,
+Rajdhani clock). Fish is wired the same way as zsh.
 
 ## Iterating afterwards
 
 ```
 ./install.sh                # re-apply everything user-level
-./install.sh --only ghostty # one layer: kde|gtk|ghostty|shell|panel|cursor|boot
+./install.sh --only ghostty # one layer: kde|gtk|ghostty|shell|panel|cursor|boot|icons
 ./install.sh --root         # the privileged pass (cursor, greeter, boot)
 ```
 
@@ -117,6 +124,14 @@ binaries, its **only** appearance hook is `WallpaperPluginId`. The global
 look-and-feel package does *not* theme it. But that one key accepts any Plasma
 wallpaper plugin, so we point it at the shader wallpaper and get an **animated
 neon greeter — something SDDM structurally cannot do.**
+
+### Lock screen
+
+The locker is a different surface from the login greeter. CachyOS ships a still
+image (and the Nord lock UI) via `org.kde.image` in `~/.config/kscreenlockerrc`.
+We install a NeonGrid look-and-feel package (`com.cromewar.neongrid`) for the
+clock/prompt and point the greeter wallpaper plugin at the same GLSL tile as
+the desktop, so lock, login and wallpaper stay in sync.
 
 ## ⚠ After every Plasma update
 

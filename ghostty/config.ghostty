@@ -30,6 +30,11 @@ cursor-style = block
 cursor-style-blink = false
 mouse-hide-while-typing = true
 
+# --- working directory --------------------------------------------------
+# New terminals/windows open here instead of inheriting the launcher's cwd.
+# Ghostty expands ~. If the directory is missing it falls back to $HOME.
+working-directory = ~/Developer
+
 # --- window -------------------------------------------------------------
 # server = KWin draws a real Klassy decoration: matches Plasma, respects window
 # rules, and plays properly with KWin effects. `client` would give a libadwaita

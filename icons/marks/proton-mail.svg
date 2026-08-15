@@ -1,0 +1,18 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!--
+  Proton Mail - NeonGrid theme icon
+  Envelope from Tabler Icons "mail" (MIT License) https://github.com/tabler/tabler-icons
+  Recolored to the NeonGrid palette.
+-->
+<defs>
+<linearGradient id="neongrid-mail" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#4dffe7"/>
+<stop offset="50%" stop-color="#8e55ff"/>
+<stop offset="100%" stop-color="#cc3aff"/>
+</linearGradient>
+</defs>
+<g transform="translate(-3 -3) scale(2.25)" stroke="url(#neongrid-mail)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10"/>
+<path d="M3 7l9 6l9 -6"/>
+</g>
+</svg>

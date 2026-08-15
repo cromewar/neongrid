@@ -1,0 +1,16 @@
+[Global]
+IconName=chronometer
+Name=Pomodoro Focus
+Comment=Pomodoro timer widget for Plasma panels
+
+[Event/focusFinished]
+Name=Focus interval finished
+Comment=A focus interval has ended and a break is ready to start
+Action=Sound|Popup
+Sound=alarm-clock-elapsed
+
+[Event/breakFinished]
+Name=Break finished
+Comment=A break has ended and the next focus interval is ready to start
+Action=Sound|Popup
+Sound=complete

@@ -2,7 +2,7 @@
 # NEONGRID — idempotent installer.
 #
 #   ./install.sh              # everything user-level
-#   ./install.sh --only kde   # kde | gtk | ghostty | shell | panel | cursor | boot
+#   ./install.sh --only kde   # kde | gtk | ghostty | shell | panel | cursor | boot | icons | layout
 #   ./install.sh --root       # the privileged pass (pkexec; cursor, greeter, boot)
 #
 # Root is needed for exactly four things: the cursor in /usr/share/icons, the
@@ -32,6 +32,16 @@ if run pkgs && [ -z "$ONLY" ]; then
     plasma6-applets-panel-colorizer
 fi
 
+# ── icons ───────────────────────────────────────────────────────────────
+if run icons; then
+  say "Icon theme (hue-snap + brand marks)"
+  if [ ! -f "$HOME/.local/share/icons/NeonGrid/index.theme" ]; then
+    python3 icons/hue-snap.py
+  fi
+  bash icons/gen-icons.sh
+  kwriteconfig6 --file kdeglobals --group Icons --key Theme NeonGrid
+fi
+
 # ── KDE ─────────────────────────────────────────────────────────────────
 if run kde; then
   say "KDE core (color scheme, Darkly, Klassy, fonts, icons)"
@@ -39,6 +49,8 @@ if run kde; then
   bash kde/apply-klassy.sh
   say "Blur / glow (Better Blur DX)"
   bash kde/apply-effects.sh
+  say "Lock screen"
+  bash kde/apply-lockscreen.sh || true
 fi
 
 # ── cursor ──────────────────────────────────────────────────────────────
@@ -75,17 +87,30 @@ if run shell; then
   grep -q NEONGRID ~/.zshrc 2>/dev/null || {
     printf '\n# ---------------- NEONGRID ----------------\nsource %s/shell/neongrid-env.sh\neval "$(starship init zsh)"\n' "$HERE" >> ~/.zshrc
   }
+  FISH_RC="$HOME/.config/fish/config.fish"
+  if [ -f "$FISH_RC" ] && ! grep -q NEONGRID "$FISH_RC"; then
+    cat >> "$FISH_RC" <<EOF
+
+# ---------------- NEONGRID ----------------
+if status is-interactive
+    source $HERE/shell/neongrid-env.fish
+    starship init fish | source
+end
+EOF
+    echo "  fish wired to starship + palette"
+  fi
 fi
 
-# ── panel ───────────────────────────────────────────────────────────────
-if run panel; then
+# ── panel / dock ────────────────────────────────────────────────────────
+if run panel || run layout; then
+  say "Panel layout (dock + top bar)"
+  bash kde/install-plasmoids.sh
+  bash kde/apply-layout.sh || true
+  sleep 2
   say "Neon panel (Panel Colorizer)"
-  if ! grep -q "luisbocanegra.panel.colorizer" ~/.config/plasma-org.kde.plasma.desktop-appletsrc 2>/dev/null; then
-    qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript \
-      'var ps=panels(); if (ps.length) ps[0].addWidget("luisbocanegra.panel.colorizer");'
-    sleep 2
-  fi
   python3 kde/apply-panel.py
+  bash kde/apply-wallpaper.sh || true
+  bash kde/apply-lockscreen.sh || true
 fi
 
 # ── boot art (build only; installed by --root) ──────────────────────────

@@ -190,6 +190,17 @@ fi
 export SUDO_PROMPT=\$'\e[1;35m[sudo]\e[0m password for %p: '
 EOF
 
+# fish cannot source the bash env file. Same values, fish syntax.
+cat > "$HERE/neongrid-env.fish" <<EOF
+# NeonGrid shell env — generated. Sourced from ~/.config/fish/config.fish.
+
+set -gx FZF_DEFAULT_OPTS "--color=fg:$(hx "$FG"),bg:-1,hl:$(hx "$GREEN_HERO") --color=fg+:$(hx "$WHITE_BR"),bg+:$(hx "$SEL_BG"),hl+:$(hx "$GREEN_HERO") --color=info:$(hx "$VIOLET"),prompt:$(hx "$GREEN_HERO"),pointer:$(hx "$MAGENTA") --color=marker:$(hx "$RED"),spinner:$(hx "$VIOLET_BR"),border:$(hx "$SEL_BG") --color=header:$(hx "$FG_DIM") --height=60% --layout=reverse --border=rounded --prompt='▶ '"
+
+if command -q vivid
+    set -gx LS_COLORS (vivid generate molokai 2>/dev/null)
+end
+EOF
+
 # ============ fastfetch =================================================
 cat > ~/.config/fastfetch/config.jsonc <<EOF
 {

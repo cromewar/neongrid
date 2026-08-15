@@ -1,0 +1,25 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Id": "com.cromewar.downloadsstack",
+        "Name": "Downloads Stack",
+        "Description": "A macOS-style fan of your most recent downloads. Click to fan out the newest files (newest nearest the icon) and drag any of them straight into another app.",
+        "Icon": "folder-download",
+        "Category": "Utilities",
+        "License": "GPL-3.0-or-later",
+        "Version": "1.0.0",
+        "Website": "https://github.com/cromewar/plasma-downloads-stack",
+        "BugReportUrl": "https://github.com/cromewar/plasma-downloads-stack/issues",
+        "Authors": [
+            {
+                "Name": "Vasiliy",
+                "Email": "vasiliy@cromewar.com"
+            }
+        ],
+        "FormFactors": [
+            "desktop",
+            "planar"
+        ]
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile name=""/>
+    <group name="General">
+        <entry name="downloadPath" type="String">
+            <label>Folder to watch. Empty means the XDG Downloads folder.</label>
+            <default></default>
+        </entry>
+        <entry name="maxItems" type="Int">
+            <label>How many recent files to show.</label>
+            <default>12</default>
+        </entry>
+        <entry name="sortBy" type="Enum">
+            <label>What to sort the files by.</label>
+            <choices>
+                <choice name="date"><label>Date modified</label></choice>
+                <choice name="name"><label>Name</label></choice>
+                <choice name="size"><label>Size</label></choice>
+                <choice name="type"><label>Type</label></choice>
+            </choices>
+            <default>date</default>
+        </entry>
+        <entry name="sortDescending" type="Bool">
+            <label>Newest / Z–A / largest first.</label>
+            <default>true</default>
+        </entry>
+        <entry name="showHidden" type="Bool">
+            <label>Include hidden files.</label>
+            <default>false</default>
+        </entry>
+    </group>
+    <group name="Appearance">
+        <entry name="viewMode" type="Enum">
+            <label>How the popup lays out the files.</label>
+            <choices>
+                <choice name="fan"><label>Fan</label></choice>
+                <choice name="grid"><label>Grid</label></choice>
+                <choice name="list"><label>List</label></choice>
+            </choices>
+            <default>fan</default>
+        </entry>
+        <entry name="iconSize" type="Int">
+            <label>Size of each file icon.</label>
+            <default>64</default>
+        </entry>
+        <entry name="gridColumns" type="Int">
+            <label>Number of columns in Grid view.</label>
+            <default>3</default>
+        </entry>
+        <entry name="compactStyle" type="Enum">
+            <label>How the panel icon looks.</label>
+            <choices>
+                <choice name="stack"><label>Stack of recent files</label></choice>
+                <choice name="folder"><label>Plain folder icon</label></choice>
+            </choices>
+            <default>stack</default>
+        </entry>
+        <entry name="showBadge" type="Bool">
+            <label>Show the item-count badge on the panel icon.</label>
+            <default>true</default>
+        </entry>
+        <entry name="showFolderIcons" type="Bool">
+            <label>Show the custom icon each folder was given in Dolphin (from its .directory file).</label>
+            <default>false</default>
+        </entry>
+    </group>
+</kcfg>

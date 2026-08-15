@@ -1,0 +1,24 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "NeonGrid",
+                "Email": "vasiliy@cromewar.com"
+            }
+        ],
+        "Category": "Global Themes",
+        "Description": "NeonGrid lock screen — live GLSL tile, neon clock, dark glass prompt",
+        "Id": "com.cromewar.neongrid",
+        "License": "GPL-2.0-or-later",
+        "Name": "NeonGrid",
+        "ServiceTypes": [
+            "Plasma/LookAndFeel"
+        ],
+        "Version": "1.0.0",
+        "Website": "https://github.com/cromewar/neongrid"
+    },
+    "Keywords": "Desktop;Workspace;Appearance;Look and Feel;Lock;",
+    "X-KDE-fallbackPackage": "org.kde.breeze.desktop",
+    "X-Plasma-APIVersion": "2"
+}

@@ -34,7 +34,10 @@ for grp in org.kde.kdecoration2 org.kde.kdecoration3; do
 done
 
 # --- icons + cursor -----------------------------------------------------
-kw --file kdeglobals --group Icons --key Theme BeautyLine
+# NeonGrid is BeautyLine hue-snapped + the brand-mark overlay from
+# icons/gen-icons.sh. Do NOT set BeautyLine here — install.sh --only kde
+# would otherwise undo the overlay theme.
+kw --file kdeglobals --group Icons --key Theme NeonGrid
 
 # --- fonts --------------------------------------------------------------
 # Rajdhani: condensed, technical, and — unlike Orbitron — actually legible at

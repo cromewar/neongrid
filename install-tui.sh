@@ -101,7 +101,7 @@ while true; do
   summary
   printf '   %s1%s  Install everything        %s(recommended)%s\n' "$GRN" "$N" "$DIM" "$N"
   printf '   %s2%s  Dry run                   %s(show every action, change nothing)%s\n' "$GRN" "$N" "$DIM" "$N"
-  printf '   %s3%s  Install one layer         %s(kde · gtk · ghostty · shell · panel · cursor · boot)%s\n' "$GRN" "$N" "$DIM" "$N"
+  printf '   %s3%s  Install one layer         %s(kde · gtk · ghostty · shell · panel · cursor · boot · icons)%s\n' "$GRN" "$N" "$DIM" "$N"
   printf '   %s4%s  What will it change?      %s(read before you commit)%s\n' "$GRN" "$N" "$DIM" "$N"
   printf '   %sq%s  Quit\n\n' "$MAG" "$N"
   printf '   %s▶%s ' "$GRN" "$N"
@@ -111,10 +111,10 @@ while true; do
     1) banner; summary; what_it_does; confirm && run_install || continue ;;
     2) run_dry ;;
     3)
-      printf '\n   layer %s[kde|gtk|ghostty|shell|panel|cursor|boot]%s: ' "$DIM" "$N"
+      printf '\n   layer %s[kde|gtk|ghostty|shell|panel|cursor|boot|icons]%s: ' "$DIM" "$N"
       read -r layer
       case "$layer" in
-        kde|gtk|ghostty|shell|panel|cursor|boot) exec ./install.sh --only "$layer" ;;
+        kde|gtk|ghostty|shell|panel|cursor|boot|icons|layout) exec ./install.sh --only "$layer" ;;
         *) printf '   %sunknown layer%s\n' "$RED" "$N"; sleep 1 ;;
       esac ;;
     4)

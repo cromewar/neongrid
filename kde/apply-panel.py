@@ -115,22 +115,37 @@ def patch(g):
 
 
 # --- system tray icon replacements ------------------------------------------
-# Apps like Claude, Antigravity and TickTick push their tray icon as an EMBEDDED
-# PIXMAP over StatusNotifierItem — it never goes through the icon theme, so no
-# amount of theming touches it (that's why TickTick still showed its old logo).
+# Apps like Cohesion, Slack, Claude, Cider, ChatGPT, Antigravity and TickTick
+# push their tray icon as an EMBEDDED PIXMAP over StatusNotifierItem — it never
+# goes through the icon theme, so no amount of theming touches it (that's why
+# TickTick still showed its old logo).
 #
 # Panel Colorizer can override them by rule: `match` is a regex tested against
 # the tray item's name/title, `icon` is an icon-theme name. We point each at the
 # NeonGrid icon we built, so the tray finally matches the dock.
 #
+# Matches must be specific. Several Electron apps register as
+# chrome_status_icon_1@<app>; a bare ^chrome_status_icon would steal Notion
+# Calendar and ChatGPT and paint them as TickTick.
+#
 # The names are the SNI Ids as registered on the bus, e.g.:
-#   Claude_status_icon_1 | Antigravity_status_icon_1 | chrome_status_icon_1 (TickTick, Electron)
+#   cohesion_status_icon_1 | Slack_status_icon_1 | Claude_status_icon_1
+#   Cider_status_icon_1 | Antigravity_status_icon_1
+#   chrome_status_icon_1@ticktick | chrome_status_icon_1@ChatGPT
+#   chrome_status_icon_1@notion-calendar
 TRAY_RULES = [
-    {"description": "Claude",      "match": "^Claude_status_icon",      "icon": "claude-desktop",        "enabled": True},
-    {"description": "Antigravity", "match": "^Antigravity_status_icon", "icon": "antigravity",           "enabled": True},
-    {"description": "TickTick",    "match": "^chrome_status_icon",      "icon": "ticktick",              "enabled": True},
-    {"description": "Codex",       "match": "^(Codex|openai)",          "icon": "openai-codex-desktop",  "enabled": True},
-    {"description": "Arch-Update", "match": "^Arch-Update",             "icon": "system-software-update","enabled": True},
+    {"description": "Cohesion",        "match": "^cohesion_status_icon",    "icon": "io.github.brunofin.Cohesion", "enabled": True},
+    {"description": "Slack",           "match": "^Slack_status_icon",       "icon": "slack",                       "enabled": True},
+    {"description": "Claude",          "match": "^Claude_status_icon",      "icon": "claude-desktop",              "enabled": True},
+    {"description": "Cider",           "match": "^Cider_status_icon",       "icon": "cider",                       "enabled": True},
+    {"description": "Antigravity",     "match": "^Antigravity_status_icon", "icon": "antigravity",                 "enabled": True},
+    {"description": "ChatGPT",         "match": "ChatGPT",                  "icon": "chatgpt",                     "enabled": True},
+    {"description": "Notion Calendar", "match": "notion-calendar",          "icon": "notion-calendar",             "enabled": True},
+    {"description": "Linear",          "match": "(?i)linear",               "icon": "linear-linux",                "enabled": True},
+    {"description": "Proton Mail",     "match": "(?i)proton[- ]?mail",      "icon": "proton-mail",                 "enabled": True},
+    {"description": "TickTick",        "match": "(?i)ticktick",             "icon": "ticktick",                    "enabled": True},
+    {"description": "Codex",           "match": "^(Codex|openai)",          "icon": "openai-codex-desktop",        "enabled": True},
+    {"description": "Arch-Update",     "match": "^Arch-Update",             "icon": "system-software-update",      "enabled": True},
 ]
 
 applets = find_applets()

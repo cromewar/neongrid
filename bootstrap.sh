@@ -230,39 +230,29 @@ eval "\$(starship init zsh)"
 EOF
   echo "  zsh wired to starship + palette"
 fi
+FISH_RC="$HOME/.config/fish/config.fish"
+if [ "$DRY" = 0 ] && [ -f "$FISH_RC" ] && ! grep -q NEONGRID "$FISH_RC"; then
+  cat >> "$FISH_RC" <<EOF
+
+# ---------------- NEONGRID ----------------
+if status is-interactive
+    source $REPO/shell/neongrid-env.fish
+    starship init fish | source
+end
+EOF
+  echo "  fish wired to starship + palette"
+fi
 
 # ── 10. panel + wallpaper (needs a live plasmashell) ────────────────────────
 step "Panel and wallpaper"
 if [ "$DRY" = 0 ]; then
-  if ! grep -q "luisbocanegra.panel.colorizer" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc" 2>/dev/null; then
-    # Add the colorizer to EVERY panel — putting it only on panels()[0] lands it
-    # on whichever panel happens to be first, which may be an auto-hiding one.
-    qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript '
-      var ps = panels();
-      for (var i = 0; i < ps.length; i++) {
-        var has = false, w = ps[i].widgets();
-        for (var j = 0; j < w.length; j++) if (w[j].type == "luisbocanegra.panel.colorizer") has = true;
-        if (!has) ps[i].addWidget("luisbocanegra.panel.colorizer");
-      }' >/dev/null 2>&1
-    sleep 2
-  fi
+  bash "$REPO/kde/install-plasmoids.sh"
+  bash "$REPO/kde/apply-layout.sh" || warn "panel layout script failed (is plasmashell running?)"
+  sleep 2
   python3 "$REPO/kde/apply-panel.py"
-
-  qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
-    var d = desktops();
-    for (var i = 0; i < d.length; i++) {
-      d[i].wallpaperPlugin = 'online.knowmad.shaderwallpaper';
-      d[i].currentConfigGroup = ['Wallpaper','online.knowmad.shaderwallpaper','General'];
-      d[i].writeConfig('selectedShaderPath', '$REPO/wallpapers/neongrid.frag');
-      d[i].writeConfig('running', true);
-      d[i].writeConfig('targetFps', 30);        // the iGPU also serves local models
-      d[i].writeConfig('resolutionScale', 0.75);
-      d[i].writeConfig('pauseMode', 0);         // pause under a maximized window
-      d[i].writeConfig('shaderSpeed', 0.6);
-      d[i].writeConfig('audioEnabled', false);
-      d[i].reloadConfig();
-    }" >/dev/null 2>&1
-  echo "  panel + shader wallpaper configured"
+  bash "$REPO/kde/apply-wallpaper.sh" || warn "wallpaper apply failed"
+  bash "$REPO/kde/apply-lockscreen.sh" || warn "lock screen apply failed"
+  echo "  panel + shader wallpaper + lock screen configured"
 fi
 
 # ── 11. reload ──────────────────────────────────────────────────────────────

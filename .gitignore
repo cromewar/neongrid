@@ -1,3 +1,5 @@
 .build-shader/
 cursor/.build/
 backup/
+__pycache__/
+*.pyc

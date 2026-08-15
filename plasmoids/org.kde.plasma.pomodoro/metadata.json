@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "KDE Pomodoro contributors"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "A focus-first Pomodoro timer for Plasma panels",
+        "EnabledByDefault": true,
+        "Icon": "chronometer",
+        "Id": "org.kde.plasma.pomodoro",
+        "License": "MIT",
+        "Name": "Pomodoro Focus",
+        "Version": "2.1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
