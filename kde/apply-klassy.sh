@@ -33,17 +33,22 @@ kk --group WindowOutlineStyle --key WindowOutlineSnapToWholePixel --type bool tr
 
 # --- the glow -----------------------------------------------------------
 # There is no maintained KWin "neon outline" effect, so the glow IS the
-# decoration shadow: tint it green, max strength, largest size. On a light
-# desktop a full-strength hero-green bloom around every window is glare, so the
-# light variant uses the bulk green and pulls the strength back.
+# decoration shadow: a large, saturated green bloom around every window. BOTH
+# variants get it — it is the signature of the theme, not a dark-mode trick.
+#
+# It does have to be re-tuned rather than reused, because a shadow is composited
+# DOWNWARD: on near-black, hero green at full strength reads as light spilling
+# off the window, while the same values on paper read as a heavy dirty ring. The
+# light variant therefore uses its own accent green — darker, still 94%
+# saturated — at reduced strength, which lands as a green halo rather than as
+# either glare or grey.
+kk --group ShadowStyle --key ShadowSize ShadowVeryLarge
 if [ "$BG" = "f7faf8" ]; then     # light palette is loaded
-  kk --group ShadowStyle --key ShadowColor "$(rgb "$GREEN")"
-  kk --group ShadowStyle --key ShadowStrength 120
-  kk --group ShadowStyle --key ShadowSize ShadowLarge
+  kk --group ShadowStyle --key ShadowColor "$(rgb "$GREEN_HERO")"
+  kk --group ShadowStyle --key ShadowStrength 190
 else
   kk --group ShadowStyle --key ShadowColor "$(rgb "$GREEN_HERO")"
   kk --group ShadowStyle --key ShadowStrength 255
-  kk --group ShadowStyle --key ShadowSize ShadowVeryLarge
 fi
 
 # --- translucent, blurred titlebars -------------------------------------
