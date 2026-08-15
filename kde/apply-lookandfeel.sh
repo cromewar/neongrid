@@ -74,5 +74,12 @@ kwriteconfig6 --file kdeglobals --group KDE \
 kwriteconfig6 --file kdeglobals --group KDE \
   --key LookAndFeelPackage com.cromewar.neongrid.dark
 
+# --- splash -------------------------------------------------------------
+# contents/defaults carries this too, so a Global Theme switch moves the splash
+# with it. Set it here as well for the plain `--only kde` path, which writes the
+# individual keys without going through the look-and-feel machinery.
+kwriteconfig6 --file ksplashrc --group KSplash --key Theme  com.cromewar.neongrid.dark
+kwriteconfig6 --file ksplashrc --group KSplash --key Engine KSplashQML
+
 echo "  colour schemes -> NeonGrid Dark, NeonGrid Light"
 echo "  global themes  -> $(ls "$LNF_DIR" | tr '\n' ' ')"

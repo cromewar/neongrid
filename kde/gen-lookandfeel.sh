@@ -15,8 +15,14 @@ LIGHT="$REPO/look-and-feel/com.cromewar.neongrid.light"
 
 [ -d "$DARK" ] || { echo "ERROR: missing $DARK" >&2; exit 1; }
 
+# The splash is drawn from the palette, so each variant gets its own build
+# rather than the light package inheriting a dark-coloured splash.
+bash "$HERE/gen-splash.sh" "$DARK" >/dev/null
+
 rm -rf "$LIGHT"
 cp -a "$DARK" "$LIGHT"
+
+bash "$HERE/gen-splash.sh" "$LIGHT" --light >/dev/null
 
 # Only the colour scheme differs. Everything else — icons, Plasma style, cursor,
 # decoration, widget style — is shared, because NeonGrid's icon set and dock
@@ -24,6 +30,13 @@ cp -a "$DARK" "$LIGHT"
 sed -i 's|^ColorScheme=NeonGridDark$|ColorScheme=NeonGridLight|' "$LIGHT/contents/defaults"
 grep -q '^ColorScheme=NeonGridLight$' "$LIGHT/contents/defaults" \
   || { echo "ERROR: colour scheme not switched — did defaults change shape?" >&2; exit 1; }
+
+# The splash is selected by PACKAGE id, so the light package has to point at
+# itself — otherwise picking NeonGrid Light hands you the dark splash.
+sed -i 's|^Theme=com\.cromewar\.neongrid\.dark$|Theme=com.cromewar.neongrid.light|' \
+  "$LIGHT/contents/defaults"
+grep -q '^Theme=com\.cromewar\.neongrid\.light$' "$LIGHT/contents/defaults" \
+  || { echo "ERROR: splash theme id not switched — did defaults change shape?" >&2; exit 1; }
 
 python3 - "$LIGHT/metadata.json" <<'PY'
 import json, sys

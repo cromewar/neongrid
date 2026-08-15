@@ -37,3 +37,11 @@ cursorSize=24
 [kwinrc][org.kde.kdecoration2]
 library=org.kde.klassy
 theme=Klassy
+
+# The Plasma splash shown after login. Without this key the Global Theme applies
+# NeonGrid everywhere and then still flashes Breeze's black-and-blue splash on
+# the next login. Not the Plymouth boot splash — that is a separate theme
+# installed by install-root.sh.
+[ksplashrc][KSplash]
+Theme=com.cromewar.neongrid.dark
+Engine=KSplashQML
