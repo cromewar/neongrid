@@ -1,16 +1,41 @@
 #!/usr/bin/env bash
-# Generates NeonGrid.colors (KDE color scheme) from palette.sh.
+# Generates the KDE color scheme(s) from palette.sh.
 # Darkly + Kirigami + kde-gtk-config all read this, so it is what makes the
 # neon accent reach every Qt app, System Settings, and GTK3 without extra work.
+#
+#   gen-colors.sh [outfile]            -> NeonGrid.colors      (dark)
+#   gen-colors.sh --light [outfile]    -> NeonGridLight.colors (light)
+#
+# Both variants run through the SAME emitter below; only the palette bindings
+# differ, so the two schemes can never drift apart in structure.
 set -euo pipefail
 source "$(dirname "$0")/../palette.sh"
 
-OUT="${1:-$(dirname "$0")/NeonGrid.colors}"
+MODE="dark"
+OUT=""
+for a in "$@"; do
+  case "$a" in
+    --light) MODE="light" ;;
+    --dark)  MODE="dark" ;;
+    *)       OUT="$a" ;;
+  esac
+done
+
+if [ "$MODE" = "light" ]; then
+  neongrid_light
+  SCHEME="NeonGridLight"
+  DISPLAY="NeonGrid Light"
+else
+  SCHEME="NeonGrid"
+  DISPLAY="NeonGrid"
+fi
+
+OUT="${OUT:-$(dirname "$0")/$SCHEME.colors}"
 
 cat > "$OUT" <<EOF
 [General]
-ColorScheme=NeonGrid
-Name=NeonGrid
+ColorScheme=$SCHEME
+Name=$DISPLAY
 accent=$(rgb "$ACCENT")
 shadeSortColumn=true
 

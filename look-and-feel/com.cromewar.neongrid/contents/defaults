@@ -1,5 +1,39 @@
+# What Plasma applies when this Global Theme is selected.
+#
+# This file is the whole reason picking a Global Theme no longer nukes NeonGrid.
+# Plasma's LookAndFeelManager reads a FIXED set of keys from here — it is not a
+# generic ini merge — and that set is exactly the six settings that a Breeze
+# theme was resetting: widget style, colour scheme, icons, Plasma style, cursor
+# and window decoration. Leaving any of them out means Breeze's value wins for
+# that one key and the desktop ends up half-themed.
+#
+# Deliberately NOT set here:
+#   [Wallpaper] Image  — would replace the live GLSL shader wallpaper.
+#   fonts / AccentColor / accentColorFromWallpaper — not in the manager's key
+#     set, so they survive a theme switch on their own. Listing them would be
+#     dead weight that reads as though it were doing something.
+#
+# There is also no contents/layouts/ directory in this package, and that is
+# load-bearing: Breeze ships one, which is what lets a Global Theme switch
+# rebuild your panels from scratch. Without it, panels and widgets are left
+# untouched.
+
+[kdeglobals][KDE]
+widgetStyle=Darkly
+
 [kdeglobals][General]
 ColorScheme=NeonGrid
 
 [kdeglobals][Icons]
 Theme=NeonGrid
+
+[plasmarc][Theme]
+name=NeonGrid
+
+[kcminputrc][Mouse]
+cursorTheme=Bibata-Neon
+cursorSize=24
+
+[kwinrc][org.kde.kdecoration2]
+library=org.kde.klassy
+theme=Klassy

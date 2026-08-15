@@ -65,13 +65,38 @@ def set_color(node, hexval, alpha=1.0):
     node["alpha"] = alpha
 
 
+def set_system_color(node, system_color, color_set, hexval, alpha=1.0):
+    """sourceType 1 — resolve from the live colour scheme at paint time.
+
+    Panel Colorizer does `Kirigami.Theme[systemColor]` under `colorSet`, so the
+    panel re-colours itself the moment the colour scheme changes. That is what
+    lets NeonGrid Light actually work: a Global Theme switch only rewrites
+    kdeglobals, it never re-runs this script, so any colour pinned as a custom
+    hex would stay dark on a light desktop.
+
+    The colour set is chosen so these resolve to the SAME hexes the hardcoded
+    dark values used, leaving the dark panel pixel-identical:
+        View/backgroundColor   -> BG      (#0a0e0f dark, #f7faf8 light)
+        View/textColor         -> FG      (#c6d0cb dark, #1a2422 light)
+        View/positiveTextColor -> GREEN   (#3be05c dark, #0a6128 light)
+    `custom` is still written as the dark value so the config stays readable and
+    degrades sanely if someone flips sourceType back to 0 in the GUI.
+    """
+    node["enabled"] = True
+    node["sourceType"] = 1
+    node["systemColor"] = system_color
+    node["systemColorSet"] = color_set
+    node["custom"] = hexval
+    node["alpha"] = alpha
+
+
 def patch(g):
     panel = g["panel"]["normal"]
     panel["enabled"] = True
     panel["blurBehind"] = True
 
-    set_color(panel["backgroundColor"], hx("BG"), 0.72)
-    set_color(panel["foregroundColor"], hx("FG"), 1)
+    set_system_color(panel["backgroundColor"], "backgroundColor", "View", hx("BG"), 0.72)
+    set_system_color(panel["foregroundColor"], "textColor", "View", hx("FG"), 1)
 
     panel["radius"] = {"enabled": True, "corner": dict.fromkeys(
         ("topLeft", "topRight", "bottomRight", "bottomLeft"), 10)}
@@ -88,14 +113,14 @@ def patch(g):
     b["width"] = 1
     if "color" not in b:
         b["color"] = json.loads(json.dumps(panel["foregroundColor"]))
-    set_color(b["color"], hx("GREEN"), 0.55)
+    set_system_color(b["color"], "positiveTextColor", "View", hx("GREEN"), 0.55)
     b.setdefault("radius", {"enabled": True, "corner": dict.fromkeys(
         ("topLeft", "topRight", "bottomRight", "bottomLeft"), 10)})
 
     # The glow lives here: a soft, low-alpha green bloom behind the slab.
     sh = panel["shadow"]["background"]
     sh["enabled"] = True
-    set_color(sh["color"], hx("GREEN"), 0.35)
+    set_system_color(sh["color"], "positiveTextColor", "View", hx("GREEN"), 0.35)
     for k, v in (("size", 24), ("xOffset", 0), ("yOffset", 0)):
         sh[k] = v
 
@@ -135,6 +160,56 @@ def patch(g):
 #   chrome_status_icon_1@notion-calendar
 
 
+def _icon_search_path():
+    """Directories an icon name can actually resolve from at paint time.
+
+    Deliberately NOT "anywhere under /usr/share/icons": this box has
+    Colloid-Green-Light, BeautyLine and friends installed as *sources* for the
+    hue-snap build, and none of them are in the active theme's inheritance
+    chain. Counting those would mark a rule live for an icon Plasma will never
+    find, which is the exact failure this gate exists to prevent.
+    """
+    theme = subprocess.run(
+        ["kreadconfig6", "--file", "kdeglobals", "--group", "Icons", "--key", "Theme"],
+        capture_output=True, text=True).stdout.strip() or "hicolor"
+    roots = [os.path.expanduser("~/.local/share/icons"), "/usr/share/icons"]
+    names = [theme]
+    # Follow Inherits= one level; that is enough for our single-parent themes.
+    for r in roots:
+        idx = os.path.join(r, theme, "index.theme")
+        if os.path.isfile(idx):
+            for line in open(idx, encoding="utf-8", errors="replace"):
+                if line.startswith("Inherits="):
+                    names += [n.strip() for n in line.split("=", 1)[1].split(",") if n.strip()]
+                    break
+    names += ["hicolor"]
+    out = [os.path.join(r, n) for n in names for r in roots if os.path.isdir(os.path.join(r, n))]
+    out += [p for p in ("/usr/share/pixmaps",) if os.path.isdir(p)]
+    return out
+
+
+ICON_DIRS = _icon_search_path()
+
+
+def icon_exists(name):
+    """Is `name` resolvable as an icon on this machine?
+
+    This gate is not optional. Panel Colorizer swaps a matched tray icon for the
+    icon NAME given in the rule; if that name does not resolve, the tray item
+    renders BLANK rather than falling back to the app's own icon. And
+    icons/gen-icons.sh only builds a brand mark for apps that are actually
+    installed — so on a machine without Slack/Linear/TickTick, those rules point
+    at nothing and enabling them silently empties part of the system tray.
+    """
+    for root in ICON_DIRS:
+        for _dirpath, _dirnames, filenames in os.walk(root):
+            for f in filenames:
+                stem, ext = os.path.splitext(f)
+                if stem == name and ext.lower() in (".svg", ".png", ".svgz", ".xpm"):
+                    return True
+    return False
+
+
 def ci(s):
     """Case-insensitive pattern as character classes.
 
@@ -163,6 +238,13 @@ TRAY_RULES = [
     {"description": "Arch-Update",     "match": "^Arch-Update",             "icon": "system-software-update",      "enabled": True},
 ]
 
+# Keep only the rules whose replacement icon actually resolves here; a rule
+# pointing at a missing icon blanks the tray item instead of leaving it alone.
+for _r in TRAY_RULES:
+    _r["enabled"] = icon_exists(_r["icon"])
+LIVE_RULES = [r for r in TRAY_RULES if r["enabled"]]
+SKIPPED = [r["description"] for r in TRAY_RULES if not r["enabled"]]
+
 applets = find_applets()
 if not applets:
     sys.exit("no Panel Colorizer applet found — add the widget to a panel first")
@@ -179,9 +261,14 @@ for c, a in applets:
     # Icon color comes from the NeonGrid icon theme, not from a global override.
     kwrite(c, a, "forceForegroundColor", "false")
     # The whole replacement feature is gated behind this toggle (default false) —
-    # the rules are silently ignored without it.
-    kwrite(c, a, "systemTrayIconsReplacementEnabled", "true")
+    # the rules are silently ignored without it. Only turn it on when at least
+    # one rule can actually resolve, or it blanks the tray (see icon_exists).
+    kwrite(c, a, "systemTrayIconsReplacementEnabled",
+           "true" if LIVE_RULES else "false")
     kwrite(c, a, "systemTrayIconUserReplacements",
            json.dumps(TRAY_RULES, separators=(",", ":")))
     print(f"  configured Panel Colorizer at containment {c}, applet {a} "
-          f"(+{len(TRAY_RULES)} tray icon rules)")
+          f"({len(LIVE_RULES)}/{len(TRAY_RULES)} tray icon rules live)")
+
+if SKIPPED:
+    print(f"  tray rules off (icon not built on this machine): {', '.join(SKIPPED)}")

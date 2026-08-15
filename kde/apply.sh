@@ -7,10 +7,11 @@ source "$HERE/../palette.sh"
 
 kw() { kwriteconfig6 "$@"; }
 
-# --- color scheme -------------------------------------------------------
-mkdir -p ~/.local/share/color-schemes
-bash "$HERE/gen-colors.sh" "$HERE/NeonGrid.colors" >/dev/null
-cp -f "$HERE/NeonGrid.colors" ~/.local/share/color-schemes/NeonGrid.colors
+# --- color schemes + global themes --------------------------------------
+# Installs BOTH schemes (NeonGrid, NeonGrid Light) and registers both as real
+# Global Themes. That registration is what stops a stray click in System
+# Settings -> Global Theme from resetting the desktop to Breeze.
+bash "$HERE/apply-lookandfeel.sh"
 plasma-apply-colorscheme NeonGrid >/dev/null 2>&1 || true
 
 # Accent. Critical: accentColorFromWallpaper MUST be false, or the animated
