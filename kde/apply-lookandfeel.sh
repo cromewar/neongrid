@@ -46,5 +46,24 @@ install_lnf() {
 install_lnf "$REPO/look-and-feel/com.cromewar.neongrid"       com.cromewar.neongrid
 install_lnf "$REPO/look-and-feel/com.cromewar.neongrid.light" com.cromewar.neongrid.light
 
+# --- the light/dark PAIR ------------------------------------------------
+# Registering the themes is not enough on its own. The "Dark Mode" switch in
+# the Brightness & Color applet — and the automatic time-of-day/idle switch —
+# never consult the Global Theme list. They flip LookAndFeelPackage between
+# this configured pair, defined in /usr/share/config.kcfg/lookandfeelsettings.kcfg:
+#
+#   [KDE] DefaultLightLookAndFeel   default org.kde.breeze.desktop
+#   [KDE] DefaultDarkLookAndFeel    default org.kde.breezedark.desktop
+#
+# Leave them unset and that toggle hard-reverts the desktop to Breeze no matter
+# what is installed or currently applied. Point the pair at NeonGrid so the
+# toggle switches between our own two variants instead.
+kwriteconfig6 --file kdeglobals --group KDE \
+  --key DefaultLightLookAndFeel com.cromewar.neongrid.light
+kwriteconfig6 --file kdeglobals --group KDE \
+  --key DefaultDarkLookAndFeel com.cromewar.neongrid
+kwriteconfig6 --file kdeglobals --group KDE \
+  --key LookAndFeelPackage com.cromewar.neongrid
+
 echo "  colour schemes -> NeonGrid, NeonGrid Light"
 echo "  global themes  -> $(ls "$LNF_DIR" | tr '\n' ' ')"
